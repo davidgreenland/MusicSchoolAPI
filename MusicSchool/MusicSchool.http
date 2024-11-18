@@ -1,0 +1,6 @@
+@MusicSchool_HostAddress = http://localhost:5178
+
+GET {{MusicSchool_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
