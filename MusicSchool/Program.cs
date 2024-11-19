@@ -1,12 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using MusicSchool;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 builder.Services.AddDbContext<MusicSchoolDBContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("MusicSchoolDbContext"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MusicSchoolDbContext")
+        ?? throw new InvalidOperationException("Connection string 'MusicSchoolDbContext' not found"));
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
