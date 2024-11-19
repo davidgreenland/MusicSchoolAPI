@@ -21,4 +21,6 @@ public class MusicSchoolDBContext: DbContext
     }
 
 public DbSet<MusicSchool.Models.StudentInstrument> StudentInstrument { get; set; } = default!;
+
+public DbSet<MusicSchool.Models.Category> Category { get; set; } = default!;
 }
