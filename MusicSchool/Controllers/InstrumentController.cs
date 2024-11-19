@@ -19,7 +19,7 @@ namespace MusicSchool
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Instrument>>> GetInstruments()
         {
-            return await _context.Instrument.ToListAsync();
+            return await _context.Instrument.OrderBy(s => s.Name).ToListAsync();
         }
 
         // GET: api/Instrument/5

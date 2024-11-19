@@ -19,7 +19,7 @@ namespace MusicSchool.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Student>>> GetStudent()
         {
-            return await _context.Student.ToListAsync();
+            return await _context.Student.OrderBy(s => s.LastName).ToListAsync();
         }
 
         // GET: api/Student/5
