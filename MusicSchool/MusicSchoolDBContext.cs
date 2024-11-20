@@ -18,6 +18,11 @@ public class MusicSchoolDBContext: DbContext
             .HasMany(e => e.Instruments)
             .WithMany(e => e.Students)
             .UsingEntity<StudentInstrument>();
+
+        modelBuilder.Entity<Instrument>()
+            .HasOne(e => e.Category)
+            .WithMany(e => e.Instruments)
+            .HasForeignKey(e => e.CategoryId);
     }
 
 public DbSet<MusicSchool.Models.StudentInstrument> StudentInstrument { get; set; } = default!;

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MusicSchool.Models;
 using MusicSchool.Resources;
 
 namespace MusicSchool.Controllers;
@@ -19,28 +20,17 @@ public class SearchController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<SearchResponse>>> GetStudent([FromQuery] string q)
     {
-        var students = await (from s in _context.Student
-                    join si in _context.StudentInstrument
-                    on s.Id equals si.StudentId
-                    join i in _context.Instrument
-                    on si.InstrumentId equals i.Id
-                    where s.FirstName.Contains(q)
-                    || s.LastName.Contains(q)
-                    || i.Name.Contains(q)
-                    select new { s.FirstName, s.LastName, i.Name }).ToListAsync();
+        var students = await _context.Student
+            .Include(x => x.Instruments)
+            .Where(x => x.FirstName.Contains(q) || x.LastName.Contains(q) || x.Instruments.Any(x => x.Name.Contains(q)))
+            .Select(x => new SearchResponse($"{x.FirstName} {x.LastName}", string.Join(", ", x.Instruments.Select(x => x.Name))))
+            .ToListAsync();
 
         if (students == null || students.Count == 0)
         {
             return NotFound();
         }
 
-        var response = new List<SearchResponse>();
-
-        foreach (var student in students) 
-        {
-            response.Add(new SearchResponse($"{student.FirstName} {student.LastName}", student.Name));
-        }
-
-        return Ok(response);
+        return Ok(students);
     }
 }

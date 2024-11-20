@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicSchool.Models;
+using MusicSchool.Response;
 
 namespace MusicSchool.Controllers;
 
@@ -17,9 +18,14 @@ public class StudentController : ControllerBase
 
     // GET: api/Student
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Student>>> GetStudent()
+    public async Task<ActionResult<IEnumerable<StudentResponse>>> GetStudent()
     {
-        return await _context.Student.OrderBy(s => s.LastName).ToListAsync();
+        var students = await _context.Student
+            .OrderBy(s => s.LastName)
+            .Select(x => new StudentResponse(x.Id, $"{x.FirstName} {x.LastName}", x.DateOfBirth))
+            .ToListAsync();
+
+        return Ok(students);
     }
 
     // GET: api/Student/5
