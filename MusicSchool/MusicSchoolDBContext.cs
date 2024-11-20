@@ -25,7 +25,7 @@ public class MusicSchoolDBContext: DbContext
             .HasForeignKey(e => e.CategoryId);
     }
 
-public DbSet<MusicSchool.Models.StudentInstrument> StudentInstrument { get; set; } = default!;
+public DbSet<StudentInstrument> StudentInstrument { get; set; } = default!;
 
-public DbSet<MusicSchool.Models.Category> Category { get; set; } = default!;
+public DbSet<Category> Category { get; set; } = default!;
 }

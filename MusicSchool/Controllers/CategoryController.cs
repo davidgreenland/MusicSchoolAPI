@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicSchool.Models;
+using MusicSchool.Responses;
 
 namespace MusicSchool.Controllers;
 
@@ -15,24 +16,31 @@ public class CategoryController : ControllerBase
         _context = context;
     }
 
-    // GET: api/Category
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Category>>> GetCategory()
+    public async Task<ActionResult<IEnumerable<CategoryResponse>>> GetCategory()
     {
-        return await _context.Category.ToListAsync();
+        var categories = await _context.Category
+            .OrderBy(c => c.CategoryName)
+            .Select(c => new CategoryResponse(c.Id, c.CategoryName, null))
+            .ToListAsync();
+
+        return Ok(categories);
     }
 
     // GET: api/Category/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<Category>> GetCategory(int id)
+    public async Task<ActionResult<CategoryResponse>> GetCategory(int id)
     {
-        var category = await _context.Category.FindAsync(id);
+        var category = await _context.Category
+                .Where(x => x.Id == id)
+                .Select(x => new CategoryResponse(x.Id, x.CategoryName, x.Instruments))
+                .FirstOrDefaultAsync();
 
         if (category == null)
         {
             return NotFound();
         }
 
-        return category;
+        return Ok(category);
     }
 }

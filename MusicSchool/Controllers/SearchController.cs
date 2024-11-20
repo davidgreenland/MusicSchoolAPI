@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MusicSchool.Models;
-using MusicSchool.Resources;
+using MusicSchool.Responses;
 
 namespace MusicSchool.Controllers;
 

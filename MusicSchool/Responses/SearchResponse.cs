@@ -1,4 +1,4 @@
-﻿namespace MusicSchool.Resources;
+﻿namespace MusicSchool.Responses;
 
 public class SearchResponse
 {

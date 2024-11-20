@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicSchool.Models;
-using MusicSchool.Response;
+using MusicSchool.Responses;
 
 namespace MusicSchool.Controllers;
 
@@ -30,15 +30,18 @@ public class StudentController : ControllerBase
 
     // GET: api/Student/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<Student>> GetStudent(int id)
+    public async Task<ActionResult<StudentResponse>> GetStudent(int id)
     {
-        var student = await _context.Student.FindAsync(id);
+        var student = await _context.Student
+            .Where(x => x.Id == id)
+            .Select(x => new StudentResponse(x.Id, $"{x.FirstName} {x.LastName}", x.DateOfBirth, string.Join(", ", x.Instruments.Select(x => x.Name))))
+            .FirstOrDefaultAsync();
 
         if (student == null)
         {
             return NotFound();
         }
 
-        return student;
+        return Ok(student);
     }
 }

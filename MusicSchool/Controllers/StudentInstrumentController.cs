@@ -36,7 +36,6 @@ public class StudentInstrumentController : ControllerBase
         return studentInstrument;
     }
 
-
     // GET: api/StudentInstrument/instrument/2
     [HttpGet("instrument/{id}")]
     public async Task<ActionResult<IEnumerable<StudentInstrument>>> GetSingleInstrumentStudents(int id)
