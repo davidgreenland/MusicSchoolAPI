@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace MusicSchool.Models;
+﻿namespace MusicSchool.Models;
 
 public class Student
 {
