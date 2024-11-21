@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MusicSchool.Responses;
 
-namespace MusicSchool;
+namespace MusicSchool.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
