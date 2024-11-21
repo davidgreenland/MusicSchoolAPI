@@ -11,15 +11,15 @@ public class StudentResponse
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Instrument { get; set; }
 
+    public StudentResponse(int id, string name, DateOnly? dateOfBirth, string instrument) : this(id, name, dateOfBirth)
+    {
+        Instrument = instrument;
+    }
+
     public StudentResponse(int id, string name, DateOnly? dateOfBirth)
     {
         Id = id;
         Name = name;
         DateOfBirth = dateOfBirth;
-    }
-
-    public StudentResponse(int id, string name, DateOnly? dateOfBirth, string instrument) : this(id, name, dateOfBirth)
-    {
-        Instrument = instrument;
     }
 }

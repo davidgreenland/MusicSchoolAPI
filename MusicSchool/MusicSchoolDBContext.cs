@@ -9,9 +9,6 @@ public class MusicSchoolDBContext: DbContext
     {
     }
 
-    public DbSet<Instrument> Instrument { get; set; } = null!;
-    public DbSet<Student> Student { get; set; } = null!;
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Student>()
@@ -25,7 +22,8 @@ public class MusicSchoolDBContext: DbContext
             .HasForeignKey(e => e.CategoryId);
     }
 
-public DbSet<StudentInstrument> StudentInstrument { get; set; } = default!;
-
-public DbSet<Category> Category { get; set; } = default!;
+    public DbSet<Student> Student { get; set; } = null!;
+    public DbSet<Instrument> Instrument { get; set; } = null!;
+    public DbSet<StudentInstrument> StudentInstrument { get; set; } = null!;
+    public DbSet<Category> Category { get; set; } = null!;
 }
