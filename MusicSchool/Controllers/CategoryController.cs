@@ -20,14 +20,14 @@ public class CategoryController : ControllerBase
     {
         var categories = await _context.Category
             .OrderBy(c => c.CategoryName)
-            .Select(c => new CategoryResponse(c.Id, c.CategoryName, null))
+            .Select(c => new CategoryResponse(c.Id, c.CategoryName))
             .ToListAsync();
 
         return Ok(categories);
     }
 
     // GET: api/Category/5
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     public async Task<ActionResult<CategoryResponse>> GetCategory(int id)
     {
         var category = await _context.Category

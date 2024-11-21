@@ -28,19 +28,18 @@ public class StudentController : ControllerBase
     }
 
     // GET: api/Student/5
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     public async Task<ActionResult<StudentResponse>> GetStudent(int id)
     {
-        var student = await _context.Student
-            .Where(x => x.Id == id)
-            .Select(x => new StudentResponse(x.Id, $"{x.FirstName} {x.LastName}", x.DateOfBirth, string.Join(", ", x.Instruments.Select(x => x.Name))))
-            .FirstOrDefaultAsync();
+        var student =  await _context.Student
+            .Include(x => x.Instruments)
+            .SingleOrDefaultAsync(x => x.Id == id);
 
         if (student == null)
         {
             return NotFound();
         }
 
-        return Ok(student);
+        return Ok( new StudentResponse(student.Id, $"{student.FirstName} {student.LastName}", student.DateOfBirth, string.Join(", ", student.Instruments.Select(x => x.Name))));
     }
 }

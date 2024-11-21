@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using MusicSchool.Models;
+using System.Text.Json.Serialization;
 
 namespace MusicSchool.Responses;
 
@@ -10,20 +11,16 @@ public class CategoryResponse
     public string CategoryName { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<InstrumentResponse>? Instruments { get; set; }
+    public IEnumerable<InstrumentResponse>? Instruments { get; set; }
 
-    public CategoryResponse(int id, string categoryName, List<Models.Instrument>? instruments)
+    public CategoryResponse(int id, string categoryName, IEnumerable<Instrument>? instruments) : this(id, categoryName)
+    {
+        Instruments = instruments?.Select(x => new InstrumentResponse(x.Id, x.Name));
+    }
+
+    public CategoryResponse(int id, string categoryName)
     {
         Id = id;
         CategoryName = categoryName;
-
-        if (instruments != null)
-        {
-            Instruments = [];
-            foreach (var instrument in instruments)
-            {
-                Instruments.Add(new InstrumentResponse(instrument.Id, instrument.Name));
-            }
-        }
     }
 }

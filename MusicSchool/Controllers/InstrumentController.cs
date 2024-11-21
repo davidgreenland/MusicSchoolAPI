@@ -28,19 +28,19 @@ public class InstrumentController : ControllerBase
     }
 
     // GET: api/Instrument/5
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     public async Task<ActionResult<InstrumentResponse>> GetInstrument(int id)
     {
         var instrument = await _context.Instrument
-            .Where(x => x.Id == id)
-            .Select(x => new InstrumentResponse(x.Id, x.Name, x.Category.CategoryName, x.Students))
-            .ToListAsync();
+            .Include(i => i.Category)
+            .Include(i => i.Students)
+            .SingleOrDefaultAsync(i => i.Id == id);
 
         if (instrument == null)
         {
             return NotFound();
         }
 
-        return Ok(instrument);
+        return Ok(new InstrumentResponse(instrument.Id, instrument.Name, instrument.Category.CategoryName, instrument.Students));
     }
 }
