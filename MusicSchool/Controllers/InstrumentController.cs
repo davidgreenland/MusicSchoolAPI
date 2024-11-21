@@ -21,7 +21,7 @@ namespace MusicSchool
         {
             var instruments = await _context.Instrument
                 .OrderBy(s => s.Name)
-                .Select(x => new InstrumentResponse(x.Id, x.Name, x.Category.CategoryName, null))
+                .Select(x => new InstrumentResponse(x.Id, x.Name, x.Category.CategoryName))
                 .ToListAsync();
 
             return Ok(instruments);
