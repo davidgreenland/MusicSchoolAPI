@@ -47,11 +47,6 @@ public class CategoryController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult<Category>> UpdateCategory(int id, [FromBody] CategoryPut request)
     {
-        if (request == null)
-        {
-            return BadRequest("Request body is missing.");
-        }
-
         var category = await _context.Category
             .SingleOrDefaultAsync(x => x.Id == id);
 
@@ -62,13 +57,20 @@ public class CategoryController : ControllerBase
         }
         
         category.CategoryName = request.NewCategoryName;
-        await _context.SaveChangesAsync();
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            return BadRequest("The database was not updated");
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, $"An unexpected error occurred: {e.Message}");
+        }
 
         return Ok(category);
-    }
-
-    private bool CategoryExists(int id)
-    {
-        return _context.Category.Any(x => x.Id == id);
     }
 }

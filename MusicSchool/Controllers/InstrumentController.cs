@@ -50,12 +50,7 @@ public class InstrumentController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult<Instrument>> UpdateInstrument(int id, [FromBody] InstrumentPut request)
     {
-        if (!await InstrumentExists(id))
-        {
-            return BadRequest($"InstrumentId {id} does not exist");
-        }
-
-        if (!await CategoryExists(request.NewCategoryId))
+        if (!await CategoryExists(request.NewCategoryId)) // foreign key
         {
             return BadRequest($"Category {request.NewCategoryId} does not exist");
         }
@@ -79,7 +74,6 @@ public class InstrumentController : ControllerBase
         { 
             return BadRequest("The database was not updated");
         }
-
         catch (Exception e)
         {
             return StatusCode(500, $"An unexpected error occurred: {e.Message}");
@@ -91,10 +85,5 @@ public class InstrumentController : ControllerBase
     private async Task<bool> CategoryExists(int categoryId)
     {
         return await _context.Category.AnyAsync(c => c.Id == categoryId);
-    }
-
-    private async Task<bool> InstrumentExists(int instrumentId)
-    {
-        return await _context.Instrument.AnyAsync(i => i.Id == instrumentId);
     }
 }

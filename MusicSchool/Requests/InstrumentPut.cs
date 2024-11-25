@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace MusicSchool.Requests;
 
 public class InstrumentPut

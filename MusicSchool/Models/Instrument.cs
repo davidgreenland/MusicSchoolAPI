@@ -9,8 +9,8 @@ public class Instrument
     public required int CategoryId { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public IEnumerable<Student> Students { get; } = null!;
+    public Category Category { get; } = null!;
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public Category Category { get; } = null!;
+    public IEnumerable<Student> Students { get; } = null!;
 }
