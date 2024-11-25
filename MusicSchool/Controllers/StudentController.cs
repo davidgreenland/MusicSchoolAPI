@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MusicSchool.Requests;
 using MusicSchool.Responses;
 
 namespace MusicSchool.Controllers;
@@ -41,5 +42,40 @@ public class StudentController : ControllerBase
         }
 
         return Ok( new StudentResponse(student.Id, $"{student.FirstName} {student.LastName}", student.DateOfBirth, string.Join(", ", student.Instruments.Select(x => x.Name))));
+    }
+
+    // PUT: api/Student/1
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<StudentResponse>> UpdateInstrument(int id, [FromBody] StudentPut request)
+    {
+        var student = await _context.Student
+            .SingleOrDefaultAsync(x => x.Id == id);
+
+        if (student == null)
+        {
+            return BadRequest("Id not found");
+        }
+
+        student.FirstName = request.NewFirstName;
+        student.LastName = request.NewLastName;
+        if (request.NewDateOfBirth != null)
+        {
+            student.DateOfBirth = request.NewDateOfBirth;
+        }
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            return BadRequest("The database was not updated");
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, $"An unexpected error occurred: {e.Message}");
+        }
+
+        return Ok(student);
     }
 }
