@@ -6,5 +6,5 @@ public class Student
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
     public DateOnly? DateOfBirth { get; set; }
-    public IEnumerable<Instrument>? Instruments { get; }
+    public IEnumerable<Instrument> Instruments { get; } = null!;
 }

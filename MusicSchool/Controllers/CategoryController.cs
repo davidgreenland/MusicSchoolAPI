@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicSchool.Models;
+using MusicSchool.Requests;
 using MusicSchool.Responses;
 
 namespace MusicSchool.Controllers;
@@ -44,7 +45,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<Category>> UpdateCategory(int id, [FromBody] UpdateCategory? request)
+    public async Task<ActionResult<Category>> UpdateCategory(int id, [FromBody] CategoryPut request)
     {
         if (request == null)
         {
@@ -64,5 +65,10 @@ public class CategoryController : ControllerBase
         await _context.SaveChangesAsync();
 
         return Ok(category);
+    }
+
+    private bool CategoryExists(int id)
+    {
+        return _context.Category.Any(x => x.Id == id);
     }
 }

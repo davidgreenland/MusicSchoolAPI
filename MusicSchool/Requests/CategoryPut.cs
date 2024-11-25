@@ -1,6 +1,6 @@
-﻿namespace MusicSchool.Models;
+﻿namespace MusicSchool.Requests;
 
-public class UpdateCategory
+public class CategoryPut
 {
     public required string NewCategoryName { get; set; }
 }

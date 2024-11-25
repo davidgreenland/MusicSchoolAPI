@@ -13,9 +13,9 @@ public class CategoryResponse
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IEnumerable<InstrumentResponse>? Instruments { get; set; }
 
-    public CategoryResponse(int id, string categoryName, IEnumerable<Instrument>? instruments) : this(id, categoryName)
+    public CategoryResponse(int id, string categoryName, IEnumerable<Instrument> instruments) : this(id, categoryName)
     {
-        Instruments = instruments?.Select(x => new InstrumentResponse(x.Id, x.Name));
+        Instruments = instruments.Select(x => new InstrumentResponse(x.Id, x.Name));
     }
 
     public CategoryResponse(int id, string categoryName)

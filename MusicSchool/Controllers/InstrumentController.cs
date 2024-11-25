@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicSchool.Models;
+using MusicSchool.Requests;
 using MusicSchool.Responses;
 
 namespace MusicSchool.Controllers;
@@ -47,11 +48,11 @@ public class InstrumentController : ControllerBase
 
     // PUT: api/Instrument/1
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<Instrument>> UpdateInstrument(int id, [FromBody] UpdateInstrument? request)
+    public async Task<ActionResult<Instrument>> UpdateInstrument(int id, [FromBody] InstrumentPut request)
     {
-        if (request == null)
+        if (!await InstrumentExists(id))
         {
-            return BadRequest("Request body is missing.");
+            return BadRequest($"InstrumentId {id} does not exist");
         }
 
         if (!await CategoryExists(request.NewCategoryId))
@@ -74,10 +75,11 @@ public class InstrumentController : ControllerBase
         {
             await _context.SaveChangesAsync();
         }
-        catch(DbUpdateException)
+        catch (DbUpdateException)
         { 
             return BadRequest("The database was not updated");
         }
+
         catch (Exception e)
         {
             return StatusCode(500, $"An unexpected error occurred: {e.Message}");
@@ -89,5 +91,10 @@ public class InstrumentController : ControllerBase
     private async Task<bool> CategoryExists(int categoryId)
     {
         return await _context.Category.AnyAsync(c => c.Id == categoryId);
+    }
+
+    private async Task<bool> InstrumentExists(int instrumentId)
+    {
+        return await _context.Instrument.AnyAsync(i => i.Id == instrumentId);
     }
 }

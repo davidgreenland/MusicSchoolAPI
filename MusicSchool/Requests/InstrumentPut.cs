@@ -1,6 +1,8 @@
-namespace MusicSchool.Models;
+using System.ComponentModel.DataAnnotations;
 
-public class UpdateInstrument
+namespace MusicSchool.Requests;
+
+public class InstrumentPut
 {
     public required string NewInstrumentName { get; set; }
     public required int NewCategoryId { get; set; }
