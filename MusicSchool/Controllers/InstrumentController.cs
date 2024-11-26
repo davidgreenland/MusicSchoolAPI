@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using MusicSchool.Models;
+using MusicSchool.Requests.Category;
 using MusicSchool.Requests.Instrument;
 using MusicSchool.Responses;
 
@@ -70,7 +72,7 @@ public class InstrumentController : ControllerBase
         {
             await _context.SaveChangesAsync();
         }
-        catch (DbUpdateException)
+        catch (DbUpdateException e)
         { 
             return BadRequest("The database was not updated");
         }
@@ -80,6 +82,41 @@ public class InstrumentController : ControllerBase
         }
 
         return Ok(instrument);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<Instrument>> CreateInstrument([FromBody] CreateInstrumentRequest request)
+    {
+        var existingInstrument = await _context.Instrument
+            .Where(x => x.CategoryId == request.CategoryId)
+            .SingleOrDefaultAsync(x => x.Name == request.Name);
+
+        if (existingInstrument != null)
+        {
+            return BadRequest("Instrument already exists");
+        }
+
+        var newInstrument = new Instrument { 
+            Name = request.Name,
+            CategoryId = request.CategoryId,
+        };
+
+        _context.Instrument.Add(newInstrument);
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            return BadRequest("The database was not updated");
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, $"An unexpected error occurred: {e.Message}");
+        }
+
+        return CreatedAtAction(nameof(GetInstrument), new { id = newInstrument.Id }, newInstrument);
     }
 
     private async Task<bool> CategoryExists(int categoryId)
