@@ -73,4 +73,34 @@ public class CategoryController : ControllerBase
 
         return Ok(category);
     }
+
+    [HttpPost]
+    public async Task<ActionResult<Category>> CreateCategory([FromBody] CreateCategoryRequest request)
+    {
+        var existingCategory = await _context.Category
+            .SingleOrDefaultAsync(c => c.CategoryName == request.CategoryName);
+
+        if (existingCategory != null)
+        {
+            return BadRequest("Category already exists");
+        }
+
+        var newCategory = new Category { CategoryName = request.CategoryName };
+        _context.Category.Add(newCategory);
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            return BadRequest("The database was not updated");
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, $"An unexpected error occurred: {e.Message}");
+        }
+
+        return CreatedAtAction(nameof(GetCategory), new { id = newCategory.Id }, newCategory);
+    }
 }
