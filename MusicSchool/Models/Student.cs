@@ -10,5 +10,5 @@ public class Student
     public DateOnly? DateOfBirth { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public IEnumerable<Instrument> Instruments { get; } = null!;
+    public ICollection<Instrument> Instruments { get; set; } = null!;
 }

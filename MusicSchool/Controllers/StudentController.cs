@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MusicSchool.Models;
 using MusicSchool.Requests;
 using MusicSchool.Responses;
 
@@ -62,6 +63,40 @@ public class StudentController : ControllerBase
         {
             student.DateOfBirth = request.NewDateOfBirth;
         }
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            return BadRequest("The database was not updated");
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, $"An unexpected error occurred: {e.Message}");
+        }
+
+        return Ok(student);
+    }
+
+    [HttpPatch("{id:int}/instruments")]
+    public async Task<ActionResult<Student>> UpdateStudentInstruments(int id, [FromBody] StudentInstrumentPatch request)
+    {
+        var student = await _context.Student
+                        .Include(x => x.Instruments)
+                        .SingleOrDefaultAsync(x => x.Id == id);
+        if (student == null)
+        {
+            return BadRequest("student not found");
+        }
+
+        // need to deal with invalid instrumentId?
+        var newInstruments = await _context.Instrument
+            .Where(x => request.NewInstrumentIds.Contains(x.Id))
+            .ToListAsync();
+
+        student.Instruments = newInstruments;
 
         try
         {

@@ -23,10 +23,10 @@ public class StudentInstrumentController : ControllerBase
     }
 
     // GET: api/StudentInstrument/student/1
-    [HttpGet("student/{id}")]
-    public async Task<ActionResult<IEnumerable<StudentInstrument>>> GetSingleStudentInstruments(int id)
+    [HttpGet("student/{studentId:int}")]
+    public async Task<ActionResult<IEnumerable<StudentInstrument>>> GetSingleStudentInstruments(int studentId)
     {
-        var studentInstrument = await _context.StudentInstrument.Where(x => x.StudentId == id).ToListAsync();
+        var studentInstrument = await _context.StudentInstrument.Where(x => x.StudentId == studentId).ToListAsync();
 
         if (studentInstrument == null || studentInstrument.Count == 0)
         {
@@ -37,10 +37,10 @@ public class StudentInstrumentController : ControllerBase
     }
 
     // GET: api/StudentInstrument/instrument/2
-    [HttpGet("instrument/{id}")]
-    public async Task<ActionResult<IEnumerable<StudentInstrument>>> GetSingleInstrumentStudents(int id)
+    [HttpGet("instrument/{instrumemntId:int}")]
+    public async Task<ActionResult<IEnumerable<StudentInstrument>>> GetSingleInstrumentStudents(int instrumemntId)
     {
-        var studentInstrument = await _context.StudentInstrument.Where(x => x.InstrumentId == id).ToListAsync();
+        var studentInstrument = await _context.StudentInstrument.Where(x => x.InstrumentId == instrumemntId).ToListAsync();
 
         if (studentInstrument == null || studentInstrument.Count == 0)
         {
