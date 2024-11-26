@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicSchool.Models;
-using MusicSchool.Requests;
+using MusicSchool.Requests.Instrument;
 using MusicSchool.Responses;
 
 namespace MusicSchool.Controllers;
@@ -48,7 +48,7 @@ public class InstrumentController : ControllerBase
 
     // PUT: api/Instrument/1
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<Instrument>> UpdateInstrument(int id, [FromBody] InstrumentPut request)
+    public async Task<ActionResult<Instrument>> UpdateInstrument(int id, [FromBody] UpdateInstrumentPut request)
     {
         if (!await CategoryExists(request.NewCategoryId)) // foreign key
         {

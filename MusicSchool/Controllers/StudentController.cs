@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicSchool.Models;
-using MusicSchool.Requests;
+using MusicSchool.Requests.Student;
 using MusicSchool.Responses;
 
 namespace MusicSchool.Controllers;
@@ -47,7 +47,7 @@ public class StudentController : ControllerBase
 
     // PUT: api/Student/1
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<StudentResponse>> UpdateInstrument(int id, [FromBody] StudentPut request)
+    public async Task<ActionResult<StudentResponse>> UpdateInstrument(int id, [FromBody] UpdateStudentPut request)
     {
         var student = await _context.Student
             .SingleOrDefaultAsync(x => x.Id == id);
@@ -81,7 +81,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpPatch("{id:int}/instruments")]
-    public async Task<ActionResult<Student>> UpdateStudentInstruments(int id, [FromBody] StudentInstrumentPatch request)
+    public async Task<ActionResult<Student>> UpdateStudentInstruments(int id, [FromBody] UpdateStudentInstrumentsPatch request)
     {
         var student = await _context.Student
                         .Include(x => x.Instruments)

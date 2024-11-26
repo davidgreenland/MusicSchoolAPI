@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicSchool.Models;
-using MusicSchool.Requests;
+using MusicSchool.Requests.Category;
 using MusicSchool.Responses;
 
 namespace MusicSchool.Controllers;
@@ -45,7 +45,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<Category>> UpdateCategory(int id, [FromBody] CategoryPut request)
+    public async Task<ActionResult<Category>> UpdateCategory(int id, [FromBody] UpdateCategory request)
     {
         var category = await _context.Category
             .SingleOrDefaultAsync(x => x.Id == id);

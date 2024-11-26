@@ -1,6 +1,6 @@
-﻿namespace MusicSchool.Requests;
+﻿namespace MusicSchool.Requests.Student;
 
-public class StudentPut
+public class UpdateStudentPut
 {
     public required string NewFirstName { get; set; }
     public required string NewLastName { get; set; }
