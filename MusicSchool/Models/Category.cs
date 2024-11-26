@@ -7,8 +7,7 @@ public class Category
 {
     public int Id { get; set; }
 
-    [Required]
-    public required string CategoryName { get; set; }
+    public string CategoryName { get; set; } = null!;
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IEnumerable<Instrument> Instruments { get; } = null!;
