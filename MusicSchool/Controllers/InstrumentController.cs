@@ -52,7 +52,12 @@ public class InstrumentController : ControllerBase
     {
         if (!await CategoryExists(request.NewCategoryId)) // foreign key
         {
-            return BadRequest($"Category {request.NewCategoryId} does not exist");
+            return NotFound($"Category: {request.NewCategoryId} does not exist");
+        }
+
+        if (await InstrumentExists(request.NewInstrumentName))
+        {
+            return Conflict($"Instrument: {request.NewInstrumentName}, is already in the database");
         }
 
         var instrument = await _context.Instrument
@@ -60,30 +65,23 @@ public class InstrumentController : ControllerBase
 
         if (instrument == null)
         {
-            return BadRequest("Id not found");
+            return NotFound("Id not found");
         }
 
         instrument.Name = request.NewInstrumentName;
         instrument.CategoryId = request.NewCategoryId;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateException)
-        { 
-            return BadRequest("The database was not updated");
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, $"An unexpected error occurred: {e.Message}");
-        }
+        await _context.SaveChangesAsync();
 
         return Ok(instrument);
     }
 
     private async Task<bool> CategoryExists(int categoryId)
     {
-        return await _context.Category.AnyAsync(c => c.Id == categoryId);
+        return await _context.Category.AnyAsync(x => x.Id == categoryId);
+    }
+
+    private async Task<bool> InstrumentExists(string name)
+    {
+        return await _context.Instrument.AnyAsync(x => x.Name == name);
     }
 }

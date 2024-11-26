@@ -54,7 +54,7 @@ public class StudentController : ControllerBase
 
         if (student == null)
         {
-            return BadRequest("Id not found");
+            return NotFound("Id not found");
         }
 
         student.FirstName = request.NewFirstName;
@@ -64,18 +64,7 @@ public class StudentController : ControllerBase
             student.DateOfBirth = request.NewDateOfBirth;
         }
 
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateException)
-        {
-            return BadRequest("The database was not updated");
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, $"An unexpected error occurred: {e.Message}");
-        }
+        await _context.SaveChangesAsync();
 
         return Ok(student);
     }
@@ -97,19 +86,7 @@ public class StudentController : ControllerBase
             .ToListAsync();
 
         student.Instruments = newInstruments;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateException)
-        {
-            return BadRequest("The database was not updated");
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, $"An unexpected error occurred: {e.Message}");
-        }
+        await _context.SaveChangesAsync();
 
         return Ok(student);
     }

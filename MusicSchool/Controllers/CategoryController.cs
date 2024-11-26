@@ -57,19 +57,7 @@ public class CategoryController : ControllerBase
         }
         
         category.CategoryName = request.NewCategoryName;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateException)
-        {
-            return BadRequest("The database was not updated");
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, $"An unexpected error occurred: {e.Message}");
-        }
+        await _context.SaveChangesAsync();
 
         return Ok(category);
     }
