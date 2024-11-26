@@ -59,11 +59,7 @@ public class StudentController : ControllerBase
 
         student.FirstName = request.NewFirstName;
         student.LastName = request.NewLastName;
-        if (request.NewDateOfBirth != null)
-        {
-            student.DateOfBirth = request.NewDateOfBirth;
-        }
-
+        student.DateOfBirth = request.NewDateOfBirth;
         await _context.SaveChangesAsync();
 
         return Ok(student);
