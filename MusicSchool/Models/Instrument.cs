@@ -12,5 +12,5 @@ public class Instrument
     public Category Category { get; } = null!;
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public IEnumerable<Student> Students { get; } = null!;
+    public IEnumerable<Student> Students { get; set; } = null!;
 }

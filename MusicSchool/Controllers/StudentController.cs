@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MusicSchool.Models;
 using MusicSchool.Requests.Student;
 using MusicSchool.Responses;
 
@@ -66,7 +65,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpPatch("{id:int}/instruments")]
-    public async Task<ActionResult<Student>> UpdateStudentInstruments(int id, [FromBody] UpdateStudentInstrumentsPatch request)
+    public async Task<ActionResult<StudentResponse>> UpdateStudentInstruments(int id, [FromBody] UpdateStudentInstrumentsPatch request)
     {
         var student = await _context.Student
                         .Include(x => x.Instruments)
@@ -76,14 +75,19 @@ public class StudentController : ControllerBase
             return BadRequest("student not found");
         }
 
-        // need to deal with invalid instrumentId?
         var newInstruments = await _context.Instrument
             .Where(x => request.NewInstrumentIds.Contains(x.Id))
             .ToListAsync();
 
+        if (newInstruments.Count != request.NewInstrumentIds.Count())
+        {
+            var invalidInstrumentIds = request.NewInstrumentIds.Except(newInstruments.Select(x => x.Id));
+            return BadRequest($"Invalid instrument IDs: {string.Join(", ", invalidInstrumentIds)}");
+        }
+
         student.Instruments = newInstruments;
         await _context.SaveChangesAsync();
 
-        return Ok(student);
+        return Ok(new StudentResponse(student.Id, $"{student.FirstName} {student.LastName}", student.DateOfBirth, string.Join(", ", student.Instruments.Select(x => x.Name))));
     }
 }
