@@ -54,7 +54,12 @@ public class InstrumentController : ControllerBase
     {
         if (!await CategoryExists(request.NewCategoryId)) // foreign key
         {
-            return BadRequest($"Category {request.NewCategoryId} does not exist");
+            return NotFound($"Category: {request.NewCategoryId} does not exist");
+        }
+
+        if (await InstrumentExists(request.NewInstrumentName))
+        {
+            return Conflict($"Instrument: {request.NewInstrumentName}, is already in the database");
         }
 
         var instrument = await _context.Instrument
@@ -62,7 +67,7 @@ public class InstrumentController : ControllerBase
 
         if (instrument == null)
         {
-            return BadRequest("Id not found");
+            return NotFound("Id not found");
         }
 
         instrument.Name = request.NewInstrumentName;
@@ -70,24 +75,9 @@ public class InstrumentController : ControllerBase
         await _context.SaveChangesAsync();
 
 
-        return Ok(instrument);
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<Instrument>> CreateInstrument([FromBody] CreateInstrumentRequest request)
-    {
-        var existingInstrument = await _context.Instrument
-            .Where(x => x.CategoryId == request.CategoryId)
-            .SingleOrDefaultAsync(x => x.Name == request.Name);
-
-        if (existingInstrument != null)
-        {
-            return BadRequest("Instrument already exists");
-        }
-
         var newInstrument = new Instrument { 
-            Name = request.Name,
-            CategoryId = request.CategoryId,
+            Name = request.NewInstrumentName,
+            CategoryId = request.NewCategoryId,
         };
 
         _context.Instrument.Add(newInstrument);
@@ -98,6 +88,11 @@ public class InstrumentController : ControllerBase
 
     private async Task<bool> CategoryExists(int categoryId)
     {
-        return await _context.Category.AnyAsync(c => c.Id == categoryId);
+        return await _context.Category.AnyAsync(x => x.Id == categoryId);
+    }
+
+    private async Task<bool> InstrumentExists(string name)
+    {
+        return await _context.Instrument.AnyAsync(x => x.Name == name);
     }
 }
