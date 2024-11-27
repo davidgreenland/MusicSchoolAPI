@@ -67,19 +67,8 @@ public class InstrumentController : ControllerBase
 
         instrument.Name = request.NewInstrumentName;
         instrument.CategoryId = request.NewCategoryId;
+        await _context.SaveChangesAsync();
 
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateException e)
-        { 
-            return BadRequest("The database was not updated");
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, $"An unexpected error occurred: {e.Message}");
-        }
 
         return Ok(instrument);
     }
@@ -102,19 +91,7 @@ public class InstrumentController : ControllerBase
         };
 
         _context.Instrument.Add(newInstrument);
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateException)
-        {
-            return BadRequest("The database was not updated");
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, $"An unexpected error occurred: {e.Message}");
-        }
+        await _context.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetInstrument), new { id = newInstrument.Id }, newInstrument);
     }

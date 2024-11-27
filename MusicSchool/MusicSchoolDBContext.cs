@@ -11,6 +11,7 @@ public class MusicSchoolDBContext: DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasDefaultSchema("core");
         modelBuilder.Entity<Student>()
             .HasMany(e => e.Instruments)
             .WithMany(e => e.Students)
