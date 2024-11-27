@@ -83,6 +83,7 @@ public class InstrumentController : ControllerBase
         return CreatedAtAction(nameof(GetInstrument), new { id = newInstrument.Id }, newInstrument);
     }
 
+    // POST: api/Instrument
     [HttpPost]
     public async Task<ActionResult<Instrument>> CreateInstrument([FromBody] CreateInstrumentRequest request)
     {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MusicSchool.Models;
 using MusicSchool.Requests.Student;
 using MusicSchool.Responses;
 
@@ -41,7 +42,11 @@ public class StudentController : ControllerBase
             return NotFound();
         }
 
-        return Ok( new StudentResponse(student.Id, $"{student.FirstName} {student.LastName}", student.DateOfBirth, string.Join(", ", student.Instruments.Select(x => x.Name))));
+        var instruments = student.Instruments.Any()
+            ? string.Join(", ", student.Instruments.Select(x => x.Name))
+    :       "no instruments added";
+
+        return Ok(new StudentResponse(student.Id, $"{student.FirstName} {student.LastName}", student.DateOfBirth, instruments));
     }
 
     // PUT: api/Student/1
@@ -70,24 +75,42 @@ public class StudentController : ControllerBase
         var student = await _context.Student
                         .Include(x => x.Instruments)
                         .SingleOrDefaultAsync(x => x.Id == id);
+
         if (student == null)
         {
-            return BadRequest("student not found");
+            return NotFound("student not found");
         }
 
         var newInstruments = await _context.Instrument
-            .Where(x => request.NewInstrumentIds.Contains(x.Id))
+            .Where(existing => request.NewInstrumentIds.Contains(existing.Id))
             .ToListAsync();
 
         if (newInstruments.Count != request.NewInstrumentIds.Count())
         {
             var invalidInstrumentIds = request.NewInstrumentIds.Except(newInstruments.Select(x => x.Id));
-            return BadRequest($"Invalid instrument IDs: {string.Join(", ", invalidInstrumentIds)}");
+            return NotFound($"Invalid instrument IDs: {string.Join(", ", invalidInstrumentIds)}");
         }
 
         student.Instruments = newInstruments;
         await _context.SaveChangesAsync();
 
         return Ok(new StudentResponse(student.Id, $"{student.FirstName} {student.LastName}", student.DateOfBirth, string.Join(", ", student.Instruments.Select(x => x.Name))));
+    }
+
+    // POST: api/Student
+    [HttpPost]
+    public async Task<ActionResult<Student>> CreateStudent([FromBody] CreateStudentRequest request)
+    {
+        var student = new Student
+        {
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            DateOfBirth = request.DateOfBirth
+        };
+
+        _context.Student.Add(student);
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetStudent), new { id = student.Id }, student);
     }
 }
