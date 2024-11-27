@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using MusicSchool.Models;
-using MusicSchool.Requests.Category;
 using MusicSchool.Requests.Instrument;
 using MusicSchool.Responses;
 
@@ -74,7 +72,6 @@ public class InstrumentController : ControllerBase
         instrument.CategoryId = request.NewCategoryId;
         await _context.SaveChangesAsync();
 
-
         var newInstrument = new Instrument { 
             Name = request.NewInstrumentName,
             CategoryId = request.NewCategoryId,
@@ -85,6 +82,31 @@ public class InstrumentController : ControllerBase
 
         return CreatedAtAction(nameof(GetInstrument), new { id = newInstrument.Id }, newInstrument);
     }
+
+    [HttpPost]
+    public async Task<ActionResult<Instrument>> CreateInstrument([FromBody] CreateInstrumentRequest request)
+    {
+        var existingInstrument = await _context.Instrument
+            .Where(x => x.CategoryId == request.CategoryId)
+            .SingleOrDefaultAsync(x => x.Name == request.Name);
+
+        if (existingInstrument != null)
+        {
+            return Conflict($"Instrument {request.Name} already exists");
+        }
+
+        var newInstrument = new Instrument
+        {
+            Name = request.Name,
+            CategoryId = request.CategoryId,
+        };
+
+        _context.Instrument.Add(newInstrument);
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetInstrument), new { id = newInstrument.Id }, newInstrument);
+    }
+
 
     private async Task<bool> CategoryExists(int categoryId)
     {
