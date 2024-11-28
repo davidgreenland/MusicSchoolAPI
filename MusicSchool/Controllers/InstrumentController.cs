@@ -50,12 +50,12 @@ public class InstrumentController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult<Instrument>> UpdateInstrument(int id, [FromBody] UpdateInstrumentPut request)
     {
-        if (!await CategoryExists(request.NewCategoryId)) // foreign key
+        if (!await CategoryExistsAsync(request.NewCategoryId)) // foreign key
         {
             return NotFound($"Category: {request.NewCategoryId} does not exist");
         }
 
-        if (await InstrumentExists(request.NewInstrumentName))
+        if (await InstrumentExistsAsync(request.NewInstrumentName))
         {
             return Conflict($"Instrument: {request.NewInstrumentName}, is already in the database");
         }
@@ -108,13 +108,39 @@ public class InstrumentController : ControllerBase
         return CreatedAtAction(nameof(GetInstrument), new { id = newInstrument.Id }, newInstrument);
     }
 
+    // DELETE: api/Instrument/5
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> DeleteInstrument(int id)
+    {
+        var instrument = await _context.Instrument
+            .SingleOrDefaultAsync(x => x.Id == id);
 
-    private async Task<bool> CategoryExists(int categoryId)
+        if (instrument == null)
+        {
+            return NotFound("Instrument Id not found");
+        }
+
+        var studentIsPlayingInstrument = await _context.Student
+            .Include(s => s.Instruments)
+            .AnyAsync(x => x.Instruments.Any(x => x.Id == id)); 
+
+        if (studentIsPlayingInstrument)
+        {
+            return Conflict($"Unable to delete instrument");
+        }
+
+        _context.Instrument.Remove(instrument);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    private async Task<bool> CategoryExistsAsync(int categoryId)
     {
         return await _context.Category.AnyAsync(x => x.Id == categoryId);
     }
 
-    private async Task<bool> InstrumentExists(string name)
+    private async Task<bool> InstrumentExistsAsync(string name)
     {
         return await _context.Instrument.AnyAsync(x => x.Name == name);
     }

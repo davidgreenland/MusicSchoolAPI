@@ -113,4 +113,25 @@ public class StudentController : ControllerBase
 
         return CreatedAtAction(nameof(GetStudent), new { id = student.Id }, student);
     }
+
+    // DELETE: api/Student/5
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> DeleteStudent(int id)
+    {
+        //var result = await _studentHandler.HandleDeleteStudentAsync(id);
+
+        var student = await _context.Student
+            .Include(s => s.Instruments)
+            .SingleOrDefaultAsync(s => s.Id == id);
+
+        if (student == null)
+        {
+            return NotFound($"Student: {id} not found");
+        }
+
+        _context.Student.Remove(student);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }
