@@ -62,6 +62,7 @@ public class CategoryController : ControllerBase
         return Ok(category);
     }
 
+    // POST: api/category
     [HttpPost]
     public async Task<ActionResult<Category>> CreateCategory([FromBody] CreateCategoryRequest request)
     {
@@ -79,5 +80,31 @@ public class CategoryController : ControllerBase
         await _context.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetCategory), new { id = newCategory.Id }, newCategory);
+    }
+
+    // DELETE: api/category/{id}
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> RemoveCategory(int id)
+    {
+        var category = await _context.Category
+            .SingleOrDefaultAsync(x => x.Id == id);
+
+        if (category == null)
+        {
+            return NotFound($"Category {id} not found");
+        }
+
+        var instrumentIsInCategory = await _context.Instrument
+            .AnyAsync(x => x.CategoryId == id);
+
+        if (instrumentIsInCategory)
+        {
+            return Conflict($"Unable to delete category");
+        }
+
+        _context.Category.Remove(category);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
     }
 }

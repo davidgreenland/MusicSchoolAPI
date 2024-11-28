@@ -118,8 +118,6 @@ public class StudentController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> DeleteStudent(int id)
     {
-        //var result = await _studentHandler.HandleDeleteStudentAsync(id);
-
         var student = await _context.Student
             .Include(s => s.Instruments)
             .SingleOrDefaultAsync(s => s.Id == id);
