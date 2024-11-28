@@ -96,6 +96,11 @@ public class InstrumentController : ControllerBase
             return Conflict($"Instrument {request.Name} already exists");
         }
 
+        if (!await CategoryExistsAsync(request.CategoryId))
+        {
+            return NotFound("Category Id not found");
+        }
+
         var newInstrument = new Instrument
         {
             Name = request.Name,
