@@ -1,25 +1,27 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace MusicSchool.Responses;
 
-public class ApiResponse<T>
+public class ApiResponse<T> : StatusCodeResult where T : class
 {
-    public int StatusCode { get; set; }
-    public T? Data { get; set; }
-    public string? Message { get; set; }
+    public string? Message { get; init; }
+    public T? Data { get; init; }
+    public bool IsSuccess
+    {
+        get
+        {
+            return StatusCode >= 200 && StatusCode <= 299;
+        }
+    }
 
-    public ApiResponse(int statusCode, string message) : this(statusCode)
+    public ApiResponse(HttpStatusCode statusCode, string? message) : base((int) statusCode)
     {
         Message = message;
     }
 
-    public ApiResponse(int statusCode, T data) : this(statusCode)
+    public ApiResponse(HttpStatusCode statusCode, T? data) : base((int)statusCode)
     {
         Data = data;
-    }
-
-    public ApiResponse(int statusCode)
-    {
-        StatusCode = statusCode;
     }
 }
