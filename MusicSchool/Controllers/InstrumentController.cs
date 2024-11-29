@@ -33,7 +33,7 @@ public class InstrumentController : ControllerBase
         var response = await _instrumentService.GetInstrumentAsync(id);
 
         return response.IsSuccess
-            ? Ok(response.D) : NotFound();
+            ? Ok(response.Data) : NotFound();
     }
 
     // PUT: api/Instrument/1
