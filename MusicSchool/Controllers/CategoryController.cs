@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using MusicSchool.Models;
 using MusicSchool.Requests.Category;
 using MusicSchool.Responses;
+using MusicSchool.Services.Interfaces;
 
 namespace MusicSchool.Controllers;
 
@@ -10,20 +10,17 @@ namespace MusicSchool.Controllers;
 [ApiController]
 public class CategoryController : ControllerBase
 {
-    private readonly MusicSchoolDBContext _context;
+    private readonly ICategoryService _categoryService;
 
-    public CategoryController(MusicSchoolDBContext context)
+    public CategoryController(ICategoryService categoryService)
     {
-        _context = context;
+        _categoryService = categoryService;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoryResponse>>> GetCategory()
     {
-        var categories = await _context.Category
-            .OrderBy(c => c.CategoryName)
-            .Select(c => new CategoryResponse(c.Id, c.CategoryName))
-            .ToListAsync();
+        var categories = await _categoryService.GetAllCategoriesAsync();
 
         return Ok(categories);
     }
@@ -32,79 +29,41 @@ public class CategoryController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<ActionResult<CategoryResponse>> GetCategory(int id)
     {
-        var category = await _context.Category
-                .Include(c => c.Instruments)
-                .SingleOrDefaultAsync(x => x.Id == id);
+        var response = await _categoryService.GetCategoryAsync(id);
 
-        if (category == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(new CategoryResponse(category.Id, category.CategoryName, category.Instruments));
+        return response.IsSuccess
+            ? Ok(response.Data) : NotFound();
     }
 
     [HttpPut("{id:int}")]
     public async Task<ActionResult<Category>> UpdateCategory(int id, [FromBody] UpdateCategory request)
     {
-        var category = await _context.Category
-            .SingleOrDefaultAsync(x => x.Id == id);
+        var response = await _categoryService.UpdateCategoryAsync(id, request);
 
-        if (category == null)
-        {
-            return BadRequest("Id not found");
-
-        }
-        
-        category.CategoryName = request.NewCategoryName;
-        await _context.SaveChangesAsync();
-
-        return Ok(category);
+        return response.IsSuccess
+            ? Ok(response.Data)
+            : StatusCode(response.StatusCode, response.Message);
     }
 
     // POST: api/category
     [HttpPost]
     public async Task<ActionResult<Category>> CreateCategory([FromBody] CreateCategoryRequest request)
     {
-        var existingCategory = await _context.Category
-            .SingleOrDefaultAsync(c => c.CategoryName == request.CategoryName);
+        var response = await _categoryService.CreateCategoryAsync(request);
 
-        if (existingCategory != null)
-        {
-            return BadRequest("Category already exists");
-        }
-
-        var newCategory = new Category { CategoryName = request.CategoryName };
-        _context.Category.Add(newCategory);
-
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetCategory), new { id = newCategory.Id }, newCategory);
+        return response.IsSuccess
+            ? StatusCode(response.StatusCode, response.Data)
+            : StatusCode(response.StatusCode, response.Message);
     }
 
     // DELETE: api/category/{id}
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> RemoveCategory(int id)
     {
-        var category = await _context.Category
-            .SingleOrDefaultAsync(x => x.Id == id);
+        var response = await _categoryService.DeleteCategoryAsync(id);
 
-        if (category == null)
-        {
-            return NotFound($"Category {id} not found");
-        }
-
-        var instrumentIsInCategory = await _context.Instrument
-            .AnyAsync(x => x.CategoryId == id);
-
-        if (instrumentIsInCategory)
-        {
-            return Conflict($"Unable to delete category");
-        }
-
-        _context.Category.Remove(category);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
+        return response.IsSuccess
+            ? NoContent()
+            : StatusCode(response.StatusCode, response.Message);
     }
 }
