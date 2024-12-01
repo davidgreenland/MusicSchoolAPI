@@ -38,70 +38,37 @@ public class StudentController : ControllerBase
             ? Ok(response.Data) : NotFound();
     }
 
-    //// PUT: api/Student/1
-    //[HttpPut("{id:int}")]
-    //public async Task<ActionResult<StudentResponse>> UpdateInstrument(int id, [FromBody] UpdateStudentPut request)
-    //{
-    //    var student = await _context.Student
-    //        .SingleOrDefaultAsync(x => x.Id == id);
+    // PUT: api/Student/1
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<StudentResponse>> UpdateInstrument(int id, [FromBody] UpdateStudentPut request)
+    {
+        var response = await _studentService.UpdateInstrumentAsync(id, request);
 
-    //    if (student == null)
-    //    {
-    //        return NotFound("Id not found");
-    //    }
+        return response.IsSuccess
+            ? StatusCode(response.StatusCode, response.Data)
+            : StatusCode(response.StatusCode, response.Message);
+    }
 
-    //    student.FirstName = request.NewFirstName;
-    //    student.LastName = request.NewLastName;
-    //    student.DateOfBirth = request.NewDateOfBirth;
-    //    await _context.SaveChangesAsync();
+    [HttpPatch("{id:int}/instruments")]
+    public async Task<ActionResult<StudentResponse>> UpdateStudentInstruments(int id, [FromBody] UpdateStudentInstrumentsPatch request)
+    {
+        var response = await _studentService.UpdateStudentInstrumentsAsync(id, request);
 
-    //    return Ok(student);
-    //}
+        return response.IsSuccess
+            ? StatusCode(response.StatusCode, response.Data)
+            : StatusCode(response.StatusCode, response.Message);
+    }
 
-    //[HttpPatch("{id:int}/instruments")]
-    //public async Task<ActionResult<StudentResponse>> UpdateStudentInstruments(int id, [FromBody] UpdateStudentInstrumentsPatch request)
-    //{
-    //    var student = await _context.Student
-    //                    .Include(x => x.Instruments)
-    //                    .SingleOrDefaultAsync(x => x.Id == id);
+    // POST: api/Student
+    [HttpPost]
+    public async Task<ActionResult<Student>> CreateStudent([FromBody] CreateStudentRequest request)
+    {
+        var response = await _studentService.CreateStudentAsync(request);
 
-    //    if (student == null)
-    //    {
-    //        return NotFound("student not found");
-    //    }
-
-    //    var newInstruments = await _context.Instrument
-    //        .Where(existing => request.NewInstrumentIds.Contains(existing.Id))
-    //        .ToListAsync();
-
-    //    if (newInstruments.Count != request.NewInstrumentIds.Count())
-    //    {
-    //        var invalidInstrumentIds = request.NewInstrumentIds.Except(newInstruments.Select(x => x.Id));
-    //        return NotFound($"Invalid instrument IDs: {string.Join(", ", invalidInstrumentIds)}");
-    //    }
-
-    //    student.Instruments = newInstruments;
-    //    await _context.SaveChangesAsync();
-
-    //    return Ok(new StudentResponse(student.Id, $"{student.FirstName} {student.LastName}", student.DateOfBirth, string.Join(", ", student.Instruments.Select(x => x.Name))));
-    //}
-
-    //// POST: api/Student
-    //[HttpPost]
-    //public async Task<ActionResult<Student>> CreateStudent([FromBody] CreateStudentRequest request)
-    //{
-    //    var student = new Student
-    //    {
-    //        FirstName = request.FirstName,
-    //        LastName = request.LastName,
-    //        DateOfBirth = request.DateOfBirth
-    //    };
-
-    //    _context.Student.Add(student);
-    //    await _context.SaveChangesAsync();
-
-    //    return CreatedAtAction(nameof(GetStudent), new { id = student.Id }, student);
-    //}
+        return response.IsSuccess 
+            ? StatusCode(response.StatusCode, response.Data) 
+            : StatusCode(response.StatusCode, response.Message);
+    }
 
     //// DELETE: api/Student/5
     //[HttpDelete("{id:int}")]
