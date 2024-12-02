@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using MusicSchool.Responses;
+using MusicSchool.Services.Interfaces;
 
 namespace MusicSchool.Controllers;
 
@@ -8,28 +8,21 @@ namespace MusicSchool.Controllers;
 [ApiController]
 public class SearchController : ControllerBase
 {
-    private readonly MusicSchoolDBContext _context;
+    private readonly ISearchService _searchService;
 
-    public SearchController(MusicSchoolDBContext context)
+    public SearchController(ISearchService searchService)
     {
-        _context = context;
+        _searchService = searchService;
     }
 
     // GET: api/Search?q=pet
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<SearchResponse>>> GetStudent([FromQuery] string q)
+    public async Task<ActionResult<IEnumerable<SearchResponse>>> GetSearchResultsAsync([FromQuery] string q)
     {
-        var students = await _context.Student
-            .Include(x => x.Instruments)
-            .Where(x => x.FirstName.Contains(q) || x.LastName.Contains(q) || x.Instruments.Any(x => x.Name.Contains(q)))
-            .Select(x => new SearchResponse($"{x.FirstName} {x.LastName}", string.Join(", ", x.Instruments.Select(x => x.Name))))
-            .ToListAsync();
+        var result = await _searchService.GetSearchResultsAsync(q);
 
-        if (students == null || students.Count == 0)
-        {
-            return NotFound();
-        }
-
-        return Ok(students);
+        return result.IsSuccess
+            ? StatusCode(result.StatusCode, result.Data)
+            : StatusCode(result.StatusCode, result.Message);
     }
 }

@@ -1,10 +1,14 @@
-﻿namespace MusicSchool.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace MusicSchool.Models;
 
 public class Student
 {
-    public required int Id { get; set; }
+    public int Id { get; set; }
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
     public DateOnly? DateOfBirth { get; set; }
-    public IEnumerable<Instrument>? Instruments { get; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ICollection<Instrument> Instruments { get; set; } = null!;
 }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using MusicSchool.Models;
+using MusicSchool.Requests.Category;
 using MusicSchool.Responses;
+using MusicSchool.Services.Interfaces;
 
 namespace MusicSchool.Controllers;
 
@@ -8,37 +10,60 @@ namespace MusicSchool.Controllers;
 [ApiController]
 public class CategoryController : ControllerBase
 {
-    private readonly MusicSchoolDBContext _context;
+    private readonly ICategoryService _categoryService;
 
-    public CategoryController(MusicSchoolDBContext context)
+    public CategoryController(ICategoryService categoryService)
     {
-        _context = context;
+        _categoryService = categoryService;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoryResponse>>> GetCategory()
     {
-        var categories = await _context.Category
-            .OrderBy(c => c.CategoryName)
-            .Select(c => new CategoryResponse(c.Id, c.CategoryName))
-            .ToListAsync();
+        var categories = await _categoryService.GetAllCategoriesAsync();
 
-        return Ok(categories);
+        return HandleApiResponse(categories);
     }
 
     // GET: api/Category/5
     [HttpGet("{id:int}")]
     public async Task<ActionResult<CategoryResponse>> GetCategory(int id)
     {
-        var category = await _context.Category
-                .Include(c => c.Instruments)
-                .SingleOrDefaultAsync(x => x.Id == id);
+        var response = await _categoryService.GetCategoryAsync(id);
 
-        if (category == null)
-        {
-            return NotFound();
-        }
+        return HandleApiResponse(response);
+    }
 
-        return Ok(new CategoryResponse(category.Id, category.CategoryName, category.Instruments));
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<Category>> UpdateCategory(int id, [FromBody] UpdateCategory request)
+    {
+        var response = await _categoryService.UpdateCategoryAsync(id, request);
+
+        return HandleApiResponse(response);
+    }
+
+    // POST: api/category
+    [HttpPost]
+    public async Task<ActionResult<Category>> CreateCategory([FromBody] CreateCategoryRequest request)
+    {
+        var response = await _categoryService.CreateCategoryAsync(request);
+
+        return HandleApiResponse(response);
+    }
+
+    // DELETE: api/category/{id}
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> RemoveCategory(int id)
+    {
+        var response = await _categoryService.DeleteCategoryAsync(id);
+
+        return HandleApiResponse(response);
+    }
+
+    private ObjectResult HandleApiResponse<T>(ApiResponse<T> response) where T : class
+    {
+        return response.IsSuccess
+            ? StatusCode(response.StatusCode, response.Data)
+            : StatusCode(response.StatusCode, response.Message);
     }
 }

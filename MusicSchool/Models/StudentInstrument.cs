@@ -2,6 +2,6 @@
 
 public class StudentInstrument
 {
-    public required int StudentId { get; set; }
-    public required int InstrumentId { get; set; }
+    public int StudentId { get; set; }
+    public int InstrumentId { get; set; }
 }
