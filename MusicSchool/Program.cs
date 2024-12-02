@@ -13,6 +13,7 @@ builder.Services.AddDbContext<MusicSchoolDBContext>(options =>
 });
 builder.Services.AddTransient<IInstrumentService, InstrumentService>();
 builder.Services.AddTransient<ICategoryService, CategoryService>();
+builder.Services.AddTransient<IStudentService, StudentService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
