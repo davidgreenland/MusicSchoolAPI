@@ -78,15 +78,4 @@ public class StudentController : ControllerBase
             ? StatusCode(response.StatusCode, response.Data)
             : StatusCode(response.StatusCode, response.Message);
     }
-
-    // DELETE: api/Student/5
-    [HttpDelete("{id:int}")]
-    public async Task<ActionResult> DeleteStudent(int id)
-    {
-        var response = await _studentService.DeleteStudentAsync(id);
-
-        return response.IsSuccess
-            ? NoContent()
-            : StatusCode(response.StatusCode, response.Message);
-    }
 }

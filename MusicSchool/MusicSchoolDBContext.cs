@@ -25,6 +25,5 @@ public class MusicSchoolDBContext: DbContext
 
     public DbSet<Student> Student { get; set; } = null!;
     public DbSet<Instrument> Instrument { get; set; } = null!;
-    public DbSet<StudentInstrument> StudentInstrument { get; set; } = null!;
     public DbSet<Category> Category { get; set; } = null!;
 }
