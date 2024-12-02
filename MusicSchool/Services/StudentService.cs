@@ -17,12 +17,14 @@ public class StudentService : IStudentService
         _context = context;
     }
 
-    public async Task<IEnumerable<StudentResponse>> GetAllCategoriesAsync()
+    public async Task<ApiResponse<IEnumerable<StudentResponse>>> GetAllCategoriesAsync()
     {
-        return await _context.Student
+        var students = await _context.Student
             .OrderBy(s => s.LastName)
             .Select(x => new StudentResponse(x.Id, $"{x.FirstName} {x.LastName}", x.DateOfBirth))
             .ToListAsync();
+
+        return new ApiResponse<IEnumerable<StudentResponse>>(HttpStatusCode.OK, students);
     }
 
     public async Task<ApiResponse<StudentResponse>> GetStudentAsync(int id)
@@ -102,5 +104,22 @@ public class StudentService : IStudentService
         await _context.SaveChangesAsync();
 
         return new ApiResponse<Student>(HttpStatusCode.Created, student);
+    }
+
+    public async Task<ApiResponse<Student>> DeleteStudentAsync(int id)
+    {
+        var student = await _context.Student
+            .Include(s => s.Instruments)
+            .SingleOrDefaultAsync(s => s.Id == id);
+
+        if (student == null)
+        {
+            return new ApiResponse<Student>(HttpStatusCode.NotFound, $"Student: {id} not found");
+        }
+
+        _context.Student.Remove(student);
+        await _context.SaveChangesAsync();
+
+        return new ApiResponse<Student>(HttpStatusCode.NoContent, message: null);
     }
 }

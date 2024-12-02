@@ -23,7 +23,7 @@ public class InstrumentController : ControllerBase
     {
         var instruments = await _instrumentService.GetAllInstrumentsAsync();
 
-        return Ok(instruments);
+        return HandleApiResponse(instruments);
     }
 
     // GET: api/Instrument/5
@@ -32,8 +32,7 @@ public class InstrumentController : ControllerBase
     {
         var response = await _instrumentService.GetInstrumentAsync(id);
 
-        return response.IsSuccess
-            ? Ok(response.Data) : NotFound();
+        return HandleApiResponse(response);
     }
 
     // PUT: api/Instrument/1
@@ -42,9 +41,7 @@ public class InstrumentController : ControllerBase
     {
         var response = await _instrumentService.UpdateInstrumentAsync(id, request);
 
-        return response.IsSuccess
-            ? StatusCode(response.StatusCode, response.Data)
-            : StatusCode(response.StatusCode, response.Message);
+        return HandleApiResponse(response);
     }
 
     // POST: api/Instrument
@@ -53,9 +50,7 @@ public class InstrumentController : ControllerBase
     {
         var response = await _instrumentService.CreateInstrumentAsync(request);
 
-        return response.IsSuccess 
-            ? StatusCode(response.StatusCode, response.Data) 
-            : StatusCode(response.StatusCode, response.Message);
+        return HandleApiResponse(response);
     }
 
     // DELETE: api/Instrument/5
@@ -64,8 +59,13 @@ public class InstrumentController : ControllerBase
     {
         var response = await _instrumentService.DeleteInstrumentAsync(id);
 
+        return HandleApiResponse(response);
+    }
+
+    private ObjectResult HandleApiResponse<T>(ApiResponse<T> response) where T : class
+    {
         return response.IsSuccess
-            ? NoContent()
+            ? StatusCode(response.StatusCode, response.Data)
             : StatusCode(response.StatusCode, response.Message);
     }
 }
