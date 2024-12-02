@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using MusicSchool.Models;
 using MusicSchool.Requests.Student;
 using MusicSchool.Responses;
-using MusicSchool.Services;
 using MusicSchool.Services.Interfaces;
 
 namespace MusicSchool.Controllers;
@@ -49,6 +47,7 @@ public class StudentController : ControllerBase
             : StatusCode(response.StatusCode, response.Message);
     }
 
+    // PATCH: api/Student/2/instruments
     [HttpPatch("{id:int}/instruments")]
     public async Task<ActionResult<StudentResponse>> UpdateStudentInstruments(int id, [FromBody] UpdateStudentInstrumentsPatch request)
     {
@@ -70,22 +69,14 @@ public class StudentController : ControllerBase
             : StatusCode(response.StatusCode, response.Message);
     }
 
-    //// DELETE: api/Student/5
-    //[HttpDelete("{id:int}")]
-    //public async Task<ActionResult> DeleteStudent(int id)
-    //{
-    //    var student = await _context.Student
-    //        .Include(s => s.Instruments)
-    //        .SingleOrDefaultAsync(s => s.Id == id);
+    // DELETE: api/Student/5
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> DeleteStudent(int id)
+    {
+        var response = await _studentService.DeleteStudentAsync(id);
 
-    //    if (student == null)
-    //    {
-    //        return NotFound($"Student: {id} not found");
-    //    }
-
-    //    _context.Student.Remove(student);
-    //    await _context.SaveChangesAsync();
-
-    //    return NoContent();
-    //}
+        return response.IsSuccess
+            ? NoContent()
+            : StatusCode(response.StatusCode, response.Message);
+    }
 }

@@ -103,4 +103,21 @@ public class StudentService : IStudentService
 
         return new ApiResponse<Student>(HttpStatusCode.Created, student);
     }
+
+    public async Task<ApiResponse<Student>> DeleteStudentAsync(int id)
+    {
+        var student = await _context.Student
+            .Include(s => s.Instruments)
+            .SingleOrDefaultAsync(s => s.Id == id);
+
+        if (student == null)
+        {
+            return new ApiResponse<Student>(HttpStatusCode.NotFound, $"Student: {id} not found");
+        }
+
+        _context.Student.Remove(student);
+        await _context.SaveChangesAsync();
+
+        return new ApiResponse<Student>(HttpStatusCode.NoContent, message: null);
+    }
 }
