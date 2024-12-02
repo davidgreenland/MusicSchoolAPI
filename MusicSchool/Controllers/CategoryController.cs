@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using MusicSchool.Models;
 using MusicSchool.Requests.Category;
 using MusicSchool.Responses;
@@ -10,11 +11,11 @@ namespace MusicSchool.Controllers;
 [ApiController]
 public class CategoryController : ControllerBase
 {
-    private readonly ICategoryService _categoryService;
+    private readonly IMediator _mediator;
 
-    public CategoryController(ICategoryService categoryService)
+    public CategoryController(IMediator mediator)
     {
-        _categoryService = categoryService;
+        _mediator = mediator;
     }
 
     [HttpGet]

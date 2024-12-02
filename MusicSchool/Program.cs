@@ -14,6 +14,7 @@ builder.Services.AddDbContext<MusicSchoolDBContext>(options =>
 builder.Services.AddTransient<IInstrumentService, InstrumentService>();
 builder.Services.AddTransient<ICategoryService, CategoryService>();
 builder.Services.AddTransient<IStudentService, StudentService>();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
