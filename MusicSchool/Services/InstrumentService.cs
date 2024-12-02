@@ -17,12 +17,14 @@ public class InstrumentService : IInstrumentService
         _context = context;
     }
 
-    public async Task<IEnumerable<InstrumentResponse>> GetAllInstrumentsAsync()
+    public async Task<ApiResponse<IEnumerable<InstrumentResponse>>> GetAllInstrumentsAsync()
     {
-        return await _context.Instrument
+        var instruments = await _context.Instrument
             .OrderBy(s => s.Name)
             .Select(x => new InstrumentResponse(x.Id, x.Name, x.Category.CategoryName))
             .ToListAsync();
+
+        return new ApiResponse<IEnumerable<InstrumentResponse>>(HttpStatusCode.OK, instruments);
     }
 
     public async Task<ApiResponse<InstrumentResponse>> GetInstrumentAsync(int id)

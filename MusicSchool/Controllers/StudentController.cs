@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure;
+using Microsoft.AspNetCore.Mvc;
 using MusicSchool.Models;
 using MusicSchool.Requests.Student;
 using MusicSchool.Responses;
@@ -23,7 +24,7 @@ public class StudentController : ControllerBase
     {
         var students = await _studentService.GetAllCategoriesAsync();
 
-        return Ok(students);
+        return HandleApiResponse(students);
     }
 
     // GET: api/Student/5
@@ -32,8 +33,7 @@ public class StudentController : ControllerBase
     {
         var response = await _studentService.GetStudentAsync(id);
 
-        return response.IsSuccess
-            ? Ok(response.Data) : NotFound();
+        return HandleApiResponse(response);
     }
 
     // PUT: api/Student/1
@@ -42,9 +42,7 @@ public class StudentController : ControllerBase
     {
         var response = await _studentService.UpdateInstrumentAsync(id, request);
 
-        return response.IsSuccess
-            ? StatusCode(response.StatusCode, response.Data)
-            : StatusCode(response.StatusCode, response.Message);
+        return HandleApiResponse(response);
     }
 
     // PATCH: api/Student/2/instruments
@@ -53,9 +51,7 @@ public class StudentController : ControllerBase
     {
         var response = await _studentService.UpdateStudentInstrumentsAsync(id, request);
 
-        return response.IsSuccess
-            ? StatusCode(response.StatusCode, response.Data)
-            : StatusCode(response.StatusCode, response.Message);
+        return HandleApiResponse(response);
     }
 
     // POST: api/Student
@@ -64,8 +60,22 @@ public class StudentController : ControllerBase
     {
         var response = await _studentService.CreateStudentAsync(request);
 
-        return response.IsSuccess 
-            ? StatusCode(response.StatusCode, response.Data) 
+        return HandleApiResponse(response);
+    }
+
+    // DELETE: api/Student/5
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> DeleteStudent(int id)
+    {
+        var response = await _studentService.DeleteStudentAsync(id);
+
+        return HandleApiResponse(response);
+    }
+
+    private ObjectResult HandleApiResponse<T>(ApiResponse<T> response) where T : class
+    {
+        return response.IsSuccess
+            ? StatusCode(response.StatusCode, response.Data)
             : StatusCode(response.StatusCode, response.Message);
     }
 

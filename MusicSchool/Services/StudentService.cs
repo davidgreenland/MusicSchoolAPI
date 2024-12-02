@@ -17,12 +17,14 @@ public class StudentService : IStudentService
         _context = context;
     }
 
-    public async Task<IEnumerable<StudentResponse>> GetAllCategoriesAsync()
+    public async Task<ApiResponse<IEnumerable<StudentResponse>>> GetAllCategoriesAsync()
     {
-        return await _context.Student
+        var students = await _context.Student
             .OrderBy(s => s.LastName)
             .Select(x => new StudentResponse(x.Id, $"{x.FirstName} {x.LastName}", x.DateOfBirth))
             .ToListAsync();
+
+        return new ApiResponse<IEnumerable<StudentResponse>>(HttpStatusCode.OK, students);
     }
 
     public async Task<ApiResponse<StudentResponse>> GetStudentAsync(int id)
