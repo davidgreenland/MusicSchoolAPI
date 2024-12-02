@@ -18,8 +18,8 @@ public class SearchService : ISearchService
     {
         var students = await _context.Student
             .Include(x => x.Instruments)
-            .Where(x => x.FirstName.Contains(q) || x.LastName.Contains(q) || x.Instruments.Any(x => x.Name.Contains(q)))
-            .Select(x => new SearchResponse($"{x.FirstName} {x.LastName}", string.Join(", ", x.Instruments.Select(x => x.Name))))
+            .Where(x => x.FirstName.Contains(q) || x.LastName.Contains(q) || x.Instruments!.Any(x => x.Name.Contains(q)))
+            .Select(x => new SearchResponse($"{x.FirstName} {x.LastName}", string.Join(", ", x.Instruments!.Select(x => x.Name))))
             .ToListAsync();
 
         return students == null || students.Count == 0

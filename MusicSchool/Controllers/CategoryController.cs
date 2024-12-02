@@ -18,7 +18,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<CategoryResponse>>> GetCategory()
+    public async Task<ActionResult<IEnumerable<CategoryResponse>>> GetAllCategories()
     {
         var categories = await _categoryService.GetAllCategoriesAsync();
 
@@ -27,7 +27,7 @@ public class CategoryController : ControllerBase
 
     // GET: api/Category/5
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<CategoryResponse>> GetCategory(int id)
+    public async Task<ActionResult<CategoryResponse>> GetCategoryById(int id)
     {
         var response = await _categoryService.GetCategoryAsync(id);
 

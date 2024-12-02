@@ -21,7 +21,7 @@ public class InstrumentService : IInstrumentService
     {
         var instruments = await _context.Instrument
             .OrderBy(s => s.Name)
-            .Select(x => new InstrumentResponse(x.Id, x.Name, x.Category.CategoryName))
+            .Select(x => new InstrumentResponse(x.Id, x.Name, x.Category!.Name))
             .ToListAsync();
 
         return new ApiResponse<IEnumerable<InstrumentResponse>>(HttpStatusCode.OK, instruments);
@@ -36,7 +36,7 @@ public class InstrumentService : IInstrumentService
 
         return instrument == null
             ? new ApiResponse<InstrumentResponse>(HttpStatusCode.NotFound, message: null)
-            : new ApiResponse<InstrumentResponse>(HttpStatusCode.OK, new InstrumentResponse(instrument.Id, instrument.Name, instrument.Category.CategoryName, instrument.Students));
+            : new ApiResponse<InstrumentResponse>(HttpStatusCode.OK, new InstrumentResponse(instrument.Id, instrument.Name, instrument.Category!.Name, instrument.Students));
     }
 
     public async Task<ApiResponse<Instrument>> UpdateInstrumentAsync(int id, UpdateInstrumentPut request)
@@ -106,7 +106,7 @@ public class InstrumentService : IInstrumentService
 
         var studentHasInstrument = await _context.Student
             .Include(s => s.Instruments)
-            .AnyAsync(x => x.Instruments.Any(x => x.Id == id));
+            .AnyAsync(x => x.Instruments!.Any(x => x.Id == id));
 
         if (studentHasInstrument)
         {

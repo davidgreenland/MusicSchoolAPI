@@ -7,8 +7,8 @@ public class CategoryResponse
 {
     public int Id { get; set; }
 
-    [JsonPropertyName("category")]
-    public string CategoryName { get; set; }
+    //[JsonPropertyName("category")]
+    public string Name { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IEnumerable<InstrumentResponse>? Instruments { get; set; }
@@ -21,6 +21,6 @@ public class CategoryResponse
     public CategoryResponse(int id, string categoryName)
     {
         Id = id;
-        CategoryName = categoryName;
+        Name = categoryName;
     }
 }

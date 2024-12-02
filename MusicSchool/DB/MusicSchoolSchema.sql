@@ -2,7 +2,7 @@ USE MusicSchool
 
 CREATE TABLE [Category] (
 	[Id] int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	[CategoryName] varchar(255) NOT NULL,
+	[Name] varchar(255) NOT NULL,
 )
 
 CREATE TABLE [Instrument] (

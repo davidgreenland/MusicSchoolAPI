@@ -21,8 +21,8 @@ public class CategoryService : ICategoryService
     public async Task<ApiResponse<IEnumerable<CategoryResponse>>> GetAllCategoriesAsync()
     {
         var categories = await _context.Category
-            .OrderBy(c => c.CategoryName)
-            .Select(c => new CategoryResponse(c.Id, c.CategoryName))
+            .OrderBy(c => c.Name)
+            .Select(c => new CategoryResponse(c.Id, c.Name))
             .ToListAsync();
 
         return new ApiResponse<IEnumerable<CategoryResponse>>(HttpStatusCode.OK, categories);
@@ -36,7 +36,7 @@ public class CategoryService : ICategoryService
 
         return category == null
             ? new ApiResponse<CategoryResponse>(HttpStatusCode.NotFound, message: null)
-            : new ApiResponse<CategoryResponse>(HttpStatusCode.OK, new CategoryResponse(category.Id, category.CategoryName, category.Instruments));
+            : new ApiResponse<CategoryResponse>(HttpStatusCode.OK, new CategoryResponse(category.Id, category.Name, category.Instruments!));
     }
 
     public async Task<ApiResponse<Category>> UpdateCategoryAsync(int id, [FromBody] UpdateCategory request)
@@ -49,7 +49,7 @@ public class CategoryService : ICategoryService
             return new ApiResponse<Category>(HttpStatusCode.NotFound, "Id not found");
         }
 
-        category.CategoryName = request.NewCategoryName;
+        category.Name = request.NewCategoryName;
         await _context.SaveChangesAsync();
 
         return new ApiResponse<Category>(HttpStatusCode.OK, category);
@@ -58,14 +58,14 @@ public class CategoryService : ICategoryService
     public async Task<ApiResponse<Category>> CreateCategoryAsync([FromBody] CreateCategoryRequest request)
     {
         var existingCategory = await _context.Category
-            .SingleOrDefaultAsync(c => c.CategoryName == request.CategoryName);
+            .SingleOrDefaultAsync(c => c.Name == request.CategoryName);
 
         if (existingCategory != null)
         {
             return new ApiResponse<Category>(HttpStatusCode.Conflict, "Category already exists");
         }
 
-        var newCategory = new Category { CategoryName = request.CategoryName };
+        var newCategory = new Category { Name = request.CategoryName };
         _context.Category.Add(newCategory);
         await _context.SaveChangesAsync();
 

@@ -38,7 +38,7 @@ public class StudentService : IStudentService
             return new ApiResponse<StudentResponse>(HttpStatusCode.NotFound, message: null);
         }
 
-        var instruments = student.Instruments.Count == 0
+        var instruments = student.Instruments!.Count == 0
             ? "no instruments added"
             : string.Join(", ", student.Instruments.Select(x => x.Name));
 

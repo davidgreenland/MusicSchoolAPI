@@ -23,8 +23,8 @@ public class MusicSchoolDBContext: DbContext
             .HasForeignKey(e => e.CategoryId);
     }
 
-    public DbSet<Student> Student { get; set; } = null!;
-    public DbSet<Instrument> Instrument { get; set; } = null!;
-    public DbSet<StudentInstrument> StudentInstrument { get; set; } = null!;
-    public DbSet<Category> Category { get; set; } = null!;
+    public DbSet<Student> Student { get; set; }
+    public DbSet<Instrument> Instrument { get; set; }
+    public DbSet<StudentInstrument> StudentInstrument { get; set; }
+    public DbSet<Category> Category { get; set; }
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.Build.Framework;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace MusicSchool.Models;
@@ -7,8 +7,9 @@ public class Category
 {
     public int Id { get; set; }
 
-    public string CategoryName { get; set; } = null!;
+    [MaxLength(255)]    
+    public required string Name { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public IEnumerable<Instrument> Instruments { get; } = null!;
+    public IEnumerable<Instrument>? Instruments { get; set; }
 }
