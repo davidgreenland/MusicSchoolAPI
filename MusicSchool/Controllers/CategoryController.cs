@@ -22,7 +22,7 @@ public class CategoryController : ControllerBase
     {
         var categories = await _categoryService.GetAllCategoriesAsync();
 
-        return Ok(categories);
+        return HandleApiResponse(categories);
     }
 
     // GET: api/Category/5
@@ -31,8 +31,7 @@ public class CategoryController : ControllerBase
     {
         var response = await _categoryService.GetCategoryAsync(id);
 
-        return response.IsSuccess
-            ? Ok(response.Data) : NotFound();
+        return HandleApiResponse(response);
     }
 
     [HttpPut("{id:int}")]
@@ -40,9 +39,7 @@ public class CategoryController : ControllerBase
     {
         var response = await _categoryService.UpdateCategoryAsync(id, request);
 
-        return response.IsSuccess
-            ? Ok(response.Data)
-            : StatusCode(response.StatusCode, response.Message);
+        return HandleApiResponse(response);
     }
 
     // POST: api/category
@@ -51,9 +48,7 @@ public class CategoryController : ControllerBase
     {
         var response = await _categoryService.CreateCategoryAsync(request);
 
-        return response.IsSuccess
-            ? StatusCode(response.StatusCode, response.Data)
-            : StatusCode(response.StatusCode, response.Message);
+        return HandleApiResponse(response);
     }
 
     // DELETE: api/category/{id}
@@ -62,8 +57,13 @@ public class CategoryController : ControllerBase
     {
         var response = await _categoryService.DeleteCategoryAsync(id);
 
+        return HandleApiResponse(response);
+    }
+
+    private ObjectResult HandleApiResponse<T>(ApiResponse<T> response) where T : class
+    {
         return response.IsSuccess
-            ? NoContent()
+            ? StatusCode(response.StatusCode, response.Data)
             : StatusCode(response.StatusCode, response.Message);
     }
 }

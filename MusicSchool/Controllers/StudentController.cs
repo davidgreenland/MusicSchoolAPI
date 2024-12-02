@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Azure;
+using Microsoft.AspNetCore.Mvc;
 using MusicSchool.Models;
 using MusicSchool.Requests.Student;
 using MusicSchool.Responses;
-using MusicSchool.Services;
 using MusicSchool.Services.Interfaces;
 
 namespace MusicSchool.Controllers;
@@ -25,7 +24,7 @@ public class StudentController : ControllerBase
     {
         var students = await _studentService.GetAllCategoriesAsync();
 
-        return Ok(students);
+        return HandleApiResponse(students);
     }
 
     // GET: api/Student/5
@@ -34,8 +33,7 @@ public class StudentController : ControllerBase
     {
         var response = await _studentService.GetStudentAsync(id);
 
-        return response.IsSuccess
-            ? Ok(response.Data) : NotFound();
+        return HandleApiResponse(response);
     }
 
     // PUT: api/Student/1
@@ -44,19 +42,16 @@ public class StudentController : ControllerBase
     {
         var response = await _studentService.UpdateInstrumentAsync(id, request);
 
-        return response.IsSuccess
-            ? StatusCode(response.StatusCode, response.Data)
-            : StatusCode(response.StatusCode, response.Message);
+        return HandleApiResponse(response);
     }
 
+    // PATCH: api/Student/2/instruments
     [HttpPatch("{id:int}/instruments")]
     public async Task<ActionResult<StudentResponse>> UpdateStudentInstruments(int id, [FromBody] UpdateStudentInstrumentsPatch request)
     {
         var response = await _studentService.UpdateStudentInstrumentsAsync(id, request);
 
-        return response.IsSuccess
-            ? StatusCode(response.StatusCode, response.Data)
-            : StatusCode(response.StatusCode, response.Message);
+        return HandleApiResponse(response);
     }
 
     // POST: api/Student
@@ -65,27 +60,22 @@ public class StudentController : ControllerBase
     {
         var response = await _studentService.CreateStudentAsync(request);
 
-        return response.IsSuccess 
-            ? StatusCode(response.StatusCode, response.Data) 
-            : StatusCode(response.StatusCode, response.Message);
+        return HandleApiResponse(response);
     }
 
-    //// DELETE: api/Student/5
-    //[HttpDelete("{id:int}")]
-    //public async Task<ActionResult> DeleteStudent(int id)
-    //{
-    //    var student = await _context.Student
-    //        .Include(s => s.Instruments)
-    //        .SingleOrDefaultAsync(s => s.Id == id);
+    // DELETE: api/Student/5
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> DeleteStudent(int id)
+    {
+        var response = await _studentService.DeleteStudentAsync(id);
 
-    //    if (student == null)
-    //    {
-    //        return NotFound($"Student: {id} not found");
-    //    }
+        return HandleApiResponse(response);
+    }
 
-    //    _context.Student.Remove(student);
-    //    await _context.SaveChangesAsync();
-
-    //    return NoContent();
-    //}
+    private ObjectResult HandleApiResponse<T>(ApiResponse<T> response) where T : class
+    {
+        return response.IsSuccess
+            ? StatusCode(response.StatusCode, response.Data)
+            : StatusCode(response.StatusCode, response.Message);
+    }
 }
