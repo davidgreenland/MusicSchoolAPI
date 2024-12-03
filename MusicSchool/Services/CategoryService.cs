@@ -18,14 +18,12 @@ public class CategoryService : ICategoryService
         _context = context;
     }
 
-    public async Task<ApiResponse<IEnumerable<CategoryResponse>>> GetAllCategoriesAsync()
+    public async Task<IEnumerable<CategoryResponse>> GetAllCategoriesAsync()
     {
-        var categories = await _context.Category
+        return await _context.Category
             .OrderBy(c => c.Name)
             .Select(c => new CategoryResponse(c.Id, c.Name))
             .ToListAsync();
-
-        return new ApiResponse<IEnumerable<CategoryResponse>>(HttpStatusCode.OK, categories);
     }
 
     public async Task<ApiResponse<CategoryResponse>> GetCategoryAsync(int id)

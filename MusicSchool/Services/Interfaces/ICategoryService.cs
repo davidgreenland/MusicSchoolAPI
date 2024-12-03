@@ -6,7 +6,7 @@ namespace MusicSchool.Services.Interfaces;
 
 public interface ICategoryService
 {
-    Task<ApiResponse<IEnumerable<CategoryResponse>>> GetAllCategoriesAsync();
+    Task<IEnumerable<CategoryResponse>> GetAllCategoriesAsync();
     Task<ApiResponse<CategoryResponse>> GetCategoryAsync(int id);
     Task<ApiResponse<Category>> UpdateCategoryAsync(int id, UpdateCategory request);
     Task<ApiResponse<Category>> CreateCategoryAsync(CreateCategoryRequest request);
