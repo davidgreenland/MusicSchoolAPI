@@ -82,7 +82,7 @@ public class StudentService : IStudentService
        if (validReqeustedInstruments.Count != request.NewInstrumentIds.Count())
        {
             var invalidInstrumentIds = request.NewInstrumentIds.Except(validReqeustedInstruments.Select(x => x.Id));
-            return new ApiResponse<StudentResponse>(HttpStatusCode.NotFound, $"Invalid instrument IDs: {string.Join(", ", invalidInstrumentIds)}");
+            return new  ApiResponse<StudentResponse>(HttpStatusCode.NotFound, $"Invalid instrument IDs: {string.Join(", ", invalidInstrumentIds)}");
        }
 
        student.Instruments = validReqeustedInstruments;

@@ -18,12 +18,6 @@ public class GetAllCategoriesHandler : IRequestHandler<GetAllCategoriesQuery, IE
     {
         var categories = await _categoryService.GetAllCategoriesAsync();
 
-        var response = new List<CategoryResponse>();
-        foreach (var c in categories)
-        {
-            response.Add(new CategoryResponse(c.Id, c.Name));
-        }
-
-        return response;
+        return categories.Select(x => new CategoryResponse(x.Id, x.Name));
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicSchool.Models;
 using MusicSchool.Requests.Category;
@@ -32,23 +33,7 @@ public class CategoryService : ICategoryService
                 .SingleOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ApiResponse<Category>> UpdateCategoryAsync(int id, [FromBody] UpdateCategory request)
-    {
-        var category = await _context.Category
-            .SingleOrDefaultAsync(x => x.Id == id);
-
-        if (category == null) 
-        {
-            return new ApiResponse<Category>(HttpStatusCode.NotFound, "Id not found");
-        }
-
-        category.Name = request.NewCategoryName;
-        await _context.SaveChangesAsync();
-
-        return new ApiResponse<Category>(HttpStatusCode.OK, category);
-    }
-
-    public async Task<ApiResponse<Category>> CreateCategoryAsync([FromBody] CreateCategoryRequest request)
+    public async Task<ApiResponse<Category>> CreateCategoryAsync(CreateCategoryRequest request)
     {
         var existingCategory = await _context.Category
             .SingleOrDefaultAsync(c => c.Name == request.CategoryName);
@@ -80,7 +65,6 @@ public class CategoryService : ICategoryService
 
         if (categoryHasInstrument)
         {
-
             return new ApiResponse<Category>(HttpStatusCode.Conflict, "Unable to delete category");
         }
 
@@ -88,5 +72,16 @@ public class CategoryService : ICategoryService
         await _context.SaveChangesAsync();
 
         return new ApiResponse<Category>(HttpStatusCode.NoContent, data: null);
+    }
+
+    public async Task CommitAsync()
+    {
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<bool> CheckCategoryExistsAsync(string name)
+    {
+        return await _context.Category
+            .AnyAsync(c => c.Name == name);
     }
 }

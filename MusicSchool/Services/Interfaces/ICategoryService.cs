@@ -8,7 +8,8 @@ public interface ICategoryService
 {
     Task<IEnumerable<Category>> GetAllCategoriesAsync();
     Task<Category?> GetCategoryByIdAsync(int id);
-    Task<ApiResponse<Category>> UpdateCategoryAsync(int id, UpdateCategory request);
     Task<ApiResponse<Category>> CreateCategoryAsync(CreateCategoryRequest request);
     Task<ApiResponse<Category>> DeleteCategoryAsync(int id);
+    Task CommitAsync();
+    Task<bool> CheckCategoryExistsAsync(string name);
 }
