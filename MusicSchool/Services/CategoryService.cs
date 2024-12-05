@@ -33,21 +33,9 @@ public class CategoryService : ICategoryService
                 .SingleOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ApiResponse<Category>> CreateCategoryAsync(CreateCategoryRequest request)
+    public Task DeleteAsync(Category category)
     {
-        var existingCategory = await _context.Category
-            .SingleOrDefaultAsync(c => c.Name == request.CategoryName);
-
-        if (existingCategory != null)
-        {
-            return new ApiResponse<Category>(HttpStatusCode.Conflict, "Category already exists");
-        }
-
-        var newCategory = new Category { Name = request.CategoryName };
-        _context.Category.Add(newCategory);
-        await _context.SaveChangesAsync();
-
-        return new ApiResponse<Category>(HttpStatusCode.Created, newCategory);
+        throw new NotImplementedException();
     }
 
     public async Task<ApiResponse<Category>> DeleteCategoryAsync(int id)
@@ -74,6 +62,11 @@ public class CategoryService : ICategoryService
         return new ApiResponse<Category>(HttpStatusCode.NoContent, data: null);
     }
 
+    public async Task InsertAsync(Category category)
+    {
+        await _context.AddAsync(category);
+    }
+
     public async Task CommitAsync()
     {
         await _context.SaveChangesAsync();
@@ -84,4 +77,5 @@ public class CategoryService : ICategoryService
         return await _context.Category
             .AnyAsync(c => c.Name == name);
     }
+
 }
