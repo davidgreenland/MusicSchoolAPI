@@ -16,6 +16,14 @@ public class GetAllCategoriesHandler : IRequestHandler<GetAllCategoriesQuery, IE
 
     public async Task<IEnumerable<CategoryResponse>> Handle(GetAllCategoriesQuery request, CancellationToken cancellationToken)
     {
-        return await _categoryService.GetAllCategoriesAsync();
+        var categories = await _categoryService.GetAllCategoriesAsync();
+
+        var response = new List<CategoryResponse>();
+        foreach (var c in categories)
+        {
+            response.Add(new CategoryResponse(c.Id, c.Name));
+        }
+
+        return response;
     }
 }

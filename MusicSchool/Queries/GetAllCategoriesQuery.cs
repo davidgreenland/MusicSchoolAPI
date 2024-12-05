@@ -5,5 +5,4 @@ namespace MusicSchool.Queries;
 
 public class GetAllCategoriesQuery : IRequest<IEnumerable<CategoryResponse>>
 {
-    // no method body?
 }

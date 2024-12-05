@@ -18,23 +18,18 @@ public class CategoryService : ICategoryService
         _context = context;
     }
 
-    public async Task<IEnumerable<CategoryResponse>> GetAllCategoriesAsync()
+    public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
     {
         return await _context.Category
             .OrderBy(c => c.Name)
-            .Select(c => new CategoryResponse(c.Id, c.Name))
             .ToListAsync();
     }
 
-    public async Task<ApiResponse<CategoryResponse>> GetCategoryAsync(int id)
+    public async Task<Category?> GetCategoryByIdAsync(int id)
     {
-        var category = await _context.Category
+        return await _context.Category
                 .Include(c => c.Instruments)
                 .SingleOrDefaultAsync(x => x.Id == id);
-
-        return category == null
-            ? new ApiResponse<CategoryResponse>(HttpStatusCode.NotFound, message: null)
-            : new ApiResponse<CategoryResponse>(HttpStatusCode.OK, new CategoryResponse(category.Id, category.Name, category.Instruments!));
     }
 
     public async Task<ApiResponse<Category>> UpdateCategoryAsync(int id, [FromBody] UpdateCategory request)

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using MusicSchool.Models;
 using MusicSchool.Queries;
@@ -26,22 +27,24 @@ public class CategoryController : ControllerBase
         return Ok(categories);
     }
 
-    //    // GET: api/Category/5
-    //    [HttpGet("{id:int}")]
-    //    public async Task<ActionResult<CategoryResponse>> GetCategoryById(int id)
-    //    {
-    //        var response = await _categoryService.GetCategoryAsync(id);
+    // GET: api/Category/5
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<CategoryResponse>> GetCategoryById(int id)
+    {
+        var category = await _mediator.Send(new GetCategoryByIdQuery(id));
 
-    //        return HandleApiResponse(response);
-    //    }
+        return category == null
+            ? NotFound("Id not found")
+            : Ok(category);
+    }
 
-    //    [HttpPut("{id:int}")]
-    //    public async Task<ActionResult<Category>> UpdateCategory(int id, [FromBody] UpdateCategory request)
-    //    {
-    //        var response = await _categoryService.UpdateCategoryAsync(id, request);
+    //[HttpPut("{id:int}")]
+    //public async Task<ActionResult<Category>> UpdateCategory(int id, [FromBody] UpdateCategory request)
+    //{
+    //    var response = await _categoryService.UpdateCategoryAsync(id, request);
 
-    //        return HandleApiResponse(response);
-    //    }
+    //    return HandleApiResponse(response);
+    //}
 
     //    // POST: api/category
     //    [HttpPost]
@@ -61,10 +64,10 @@ public class CategoryController : ControllerBase
     //        return HandleApiResponse(response);
     //    }
 
-    //    private ObjectResult HandleApiResponse<T>(ApiResponse<T> response) where T : class
-    //    {
-    //        return response.IsSuccess
-    //            ? StatusCode(response.StatusCode, response.Data)
-    //            : StatusCode(response.StatusCode, response.Message);
-    //    }
+    private ObjectResult HandleApiResponse<T>(ApiResponse<T> response) where T : class
+    {
+        return response.IsSuccess
+            ? StatusCode(response.StatusCode, response.Data)
+            : StatusCode(response.StatusCode, response.Message);
+    }
 }
