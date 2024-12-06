@@ -1,4 +1,4 @@
-﻿namespace MusicSchool.Requests.Category;
+﻿namespace MusicSchool.Requests.CategoryRequests;
 
 public class UpdateCategory
 {

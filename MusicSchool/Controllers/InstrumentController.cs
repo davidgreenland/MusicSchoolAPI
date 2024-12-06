@@ -62,7 +62,7 @@ public class InstrumentController : ControllerBase
         return HandleApiResponse(response);
     }
 
-    private ObjectResult HandleApiResponse<T>(ApiResponse<T> response) where T : class
+    private ObjectResult HandleApiResponse<T>(ApiResult<T> response) where T : class
     {
         return response.IsSuccess
             ? StatusCode(response.StatusCode, response.Data)

@@ -14,7 +14,7 @@ public class SearchService : ISearchService
         _context = context;
     }
 
-    public async Task<ApiResponse<IEnumerable<SearchResponse>>> GetSearchResultsAsync(string q)
+    public async Task<ApiResult<IEnumerable<SearchResponse>>> GetSearchResultsAsync(string q)
     {
         var students = await _context.Student
             .Include(x => x.Instruments)
@@ -23,7 +23,7 @@ public class SearchService : ISearchService
             .ToListAsync();
 
         return students == null || students.Count == 0
-            ? new ApiResponse<IEnumerable<SearchResponse>>(HttpStatusCode.NotFound, $"{q} not found")
-            : new ApiResponse<IEnumerable<SearchResponse>>(HttpStatusCode.OK, students);
+            ? new ApiResult<IEnumerable<SearchResponse>>(HttpStatusCode.NotFound, $"{q} not found")
+            : new ApiResult<IEnumerable<SearchResponse>>(HttpStatusCode.OK, students);
     }
 }

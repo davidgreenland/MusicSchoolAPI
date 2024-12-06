@@ -1,10 +1,9 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using MusicSchool.Commands;
 using MusicSchool.Models;
 using MusicSchool.Queries;
-using MusicSchool.Requests.Category;
+using MusicSchool.Requests.CategoryRequests;
 using MusicSchool.Responses;
 
 namespace MusicSchool.Controllers;
@@ -47,23 +46,23 @@ public class CategoryController : ControllerBase
         return HandleApiResponse(response);
     }
 
-    //// POST: api/category
-    //[HttpPost]
-    //public async Task<ActionResult<Category>> CreateCategory([FromBody] CreateCategoryRequest request)
-    //{
-    //    var response = await _categoryService.CreateCategoryAsync(request);
+    // POST: api/category
+    [HttpPost]
+    public async Task<ActionResult<Category>> CreateCategory([FromBody] CreateCategoryRequest request)
+    {
+        var response = await _mediator.Send(new CreateCategoryCommand(request.CategoryName));
 
-    //    return HandleApiResponse(response);
-    //}
+        return HandleApiResponse(response);
+    }
 
-    //// DELETE: api/category/{id}
-    //[HttpDelete("{id:int}")]
-    //public async Task<ActionResult> RemoveCategory(int id)
-    //{
-    //    var response = await _categoryService.DeleteCategoryAsync(id);
+    // DELETE: api/category/{id}
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> RemoveCategory(int id)
+    {
+        var response = await _mediator.Send(new DeleteCategoryCommand(id));
 
-    //    return HandleApiResponse(response);
-    //}
+        return HandleApiResponse(response);
+    }
 
     private ObjectResult HandleApiResponse<T>(ApiResult<T> response) where T : class
     {

@@ -15,12 +15,12 @@ public class ApiResult<T> : StatusCodeResult where T : class
         }
     }
 
-    public ApiResult(HttpStatusCode status, string? message) : base((int) status)
+    public ApiResult(HttpStatusCode statusCode, string? message) : base((int)statusCode)
     {
         Message = message;
     }
 
-    public ApiResult(HttpStatusCode status, T? data) : base((int) status)
+    public ApiResult(HttpStatusCode statusCode, T? data) : base((int)statusCode)
     {
         Data = data;
     }

@@ -4,5 +4,5 @@ namespace MusicSchool.Services.Interfaces;
 
 public interface ISearchService
 {
-    Task<ApiResponse<IEnumerable<SearchResponse>>> GetSearchResultsAsync(string q);
+    Task<ApiResult<IEnumerable<SearchResponse>>> GetSearchResultsAsync(string q);
 }

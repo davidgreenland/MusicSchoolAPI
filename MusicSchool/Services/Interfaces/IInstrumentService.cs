@@ -6,9 +6,9 @@ namespace MusicSchool.Services.Interfaces;
 
 public interface IInstrumentService
 {
-    Task<ApiResponse<IEnumerable<InstrumentResponse>>> GetAllInstrumentsAsync();
-    Task<ApiResponse<InstrumentResponse>> GetInstrumentAsync(int id);
-    Task<ApiResponse<Instrument>> UpdateInstrumentAsync(int id, UpdateInstrumentPut request);
-    Task<ApiResponse<Instrument>> CreateInstrumentAsync(CreateInstrumentRequest request);
-    Task<ApiResponse<Instrument>> DeleteInstrumentAsync(int id);
+    Task<ApiResult<IEnumerable<InstrumentResponse>>> GetAllInstrumentsAsync();
+    Task<ApiResult<InstrumentResponse>> GetInstrumentAsync(int id);
+    Task<ApiResult<Instrument>> UpdateInstrumentAsync(int id, UpdateInstrumentPut request);
+    Task<ApiResult<Instrument>> CreateInstrumentAsync(CreateInstrumentRequest request);
+    Task<ApiResult<Instrument>> DeleteInstrumentAsync(int id);
 }
