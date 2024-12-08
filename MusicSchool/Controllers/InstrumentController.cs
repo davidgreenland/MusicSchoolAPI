@@ -1,11 +1,11 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using MusicSchool.Commands;
 using MusicSchool.Commands.InstrumentCommands;
 using MusicSchool.Models;
 using MusicSchool.Queries;
 using MusicSchool.Requests.Instrument;
 using MusicSchool.Responses;
-using MusicSchool.Services.Interfaces;
 
 namespace MusicSchool.Controllers;
 
@@ -58,14 +58,14 @@ public class InstrumentController : ControllerBase
         return HandleApiResponse(response);
     }
 
-    //// DELETE: api/Instrument/5
-    //[HttpDelete("{id:int}")]
-    //public async Task<ActionResult> DeleteInstrument(int id)
-    //{
-    //    var response = await _instrumentService.DeleteInstrumentAsync(id);
+    // DELETE: api/Instrument/5
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> DeleteInstrument(int id)
+    {
+        var response = await _mediator.Send(new DeleteInstrumentByIdCommand(id));
 
-    //    return HandleApiResponse(response);
-    //}
+        return HandleApiResponse(response);
+    }
 
     private ObjectResult HandleApiResponse<T>(ApiResult<T> response) where T : class
     {

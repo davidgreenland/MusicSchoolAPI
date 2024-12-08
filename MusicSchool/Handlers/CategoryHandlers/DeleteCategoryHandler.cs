@@ -7,7 +7,7 @@ using System.Net;
 
 namespace MusicSchool.Handlers.CategoryHandlers;
 
-public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryCommand, ApiResult<Category>>
+public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryByIdCommand, ApiResult<Category>>
 {
     private readonly ICategoryService _categoryService;
 
@@ -16,12 +16,12 @@ public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryCommand, ApiR
         _categoryService = categoryService;
     }
 
-    public async Task<ApiResult<Category>> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
+    public async Task<ApiResult<Category>> Handle(DeleteCategoryByIdCommand request, CancellationToken cancellationToken)
     {
         var category = await _categoryService.GetCategoryByIdAsync(request.Id);
         if (category == null)
         {
-            return new ApiResult<Category>(HttpStatusCode.NotFound, $"Instrument {request.Id} not found");
+            return new ApiResult<Category>(HttpStatusCode.NotFound, $"Category ID {request.Id} not found");
         }
         if (await _categoryService.CategoryHasInstrument(request.Id))
         {

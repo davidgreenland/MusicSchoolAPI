@@ -59,7 +59,7 @@ public class CategoryController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> RemoveCategory(int id)
     {
-        var response = await _mediator.Send(new DeleteCategoryCommand(id));
+        var response = await _mediator.Send(new DeleteCategoryByIdCommand(id));
 
         return HandleApiResponse(response);
     }

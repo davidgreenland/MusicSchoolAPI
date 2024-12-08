@@ -4,4 +4,4 @@ using MusicSchool.Responses;
 
 namespace MusicSchool.Commands;
 
-public record DeleteCategoryCommand(int Id) : IRequest<ApiResult<Category>>;
+public record DeleteInstrumentByIdCommand(int Id) : IRequest<ApiResult<Instrument>>;

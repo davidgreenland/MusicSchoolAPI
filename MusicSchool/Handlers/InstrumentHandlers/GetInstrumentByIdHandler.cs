@@ -3,7 +3,7 @@ using MusicSchool.Queries;
 using MusicSchool.Responses;
 using MusicSchool.Services.Interfaces;
 
-namespace MusicSchool.Handlers.CategoryHandlers;
+namespace MusicSchool.Handlers.InstrumentHandlers;
 
 public class GetInstrumentByIdHandler : IRequestHandler<GetInstrumentByIdQuery, InstrumentResponse?>
 {
