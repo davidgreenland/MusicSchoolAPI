@@ -50,7 +50,7 @@ public class CategoryController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Category>> CreateCategory([FromBody] CreateCategoryRequest request)
     {
-        var response = await _mediator.Send(new CreateCategoryCommand(request.CategoryName));
+        var response = await _mediator.Send(new CreateCategoryCommand(request.Name));
 
         return HandleApiResponse(response);
     }

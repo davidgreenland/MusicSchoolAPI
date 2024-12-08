@@ -5,7 +5,7 @@ using MusicSchool.Responses;
 using MusicSchool.Services.Interfaces;
 using System.Net;
 
-namespace MusicSchool.Handlers;
+namespace MusicSchool.Handlers.CategoryHandlers;
 
 public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryCommand, ApiResult<Category>>
 {
@@ -20,7 +20,7 @@ public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryCommand, ApiR
     {
         var category = await _categoryService.GetCategoryByIdAsync(request.Id);
         if (category == null)
-        { 
+        {
             return new ApiResult<Category>(HttpStatusCode.NotFound, $"Instrument {request.Id} not found");
         }
         if (await _categoryService.CategoryHasInstrument(request.Id))

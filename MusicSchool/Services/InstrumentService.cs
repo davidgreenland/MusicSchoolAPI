@@ -17,53 +17,30 @@ public class InstrumentService : IInstrumentService
         _context = context;
     }
 
-    public async Task<ApiResult<IEnumerable<InstrumentResponse>>> GetAllInstrumentsAsync()
+    public async Task<IEnumerable<Instrument>> GetAllInstrumentsAsync()
     {
-        var instruments = await _context.Instrument
-            .OrderBy(s => s.Name)
-            .Select(x => new InstrumentResponse(x.Id, x.Name, x.Category!.Name))
+        return await _context.Instrument
             .ToListAsync();
-
-        return new ApiResult<IEnumerable<InstrumentResponse>>(HttpStatusCode.OK, instruments);
     }
 
-    public async Task<ApiResult<InstrumentResponse>> GetInstrumentAsync(int id)
+    public async Task<Instrument?> GetInstrumentByIdAsync(int id)
     {
-        var instrument = await _context.Instrument
+        return await _context.Instrument
             .Include(i => i.Category)
             .Include(i => i.Students)
             .SingleOrDefaultAsync(i => i.Id == id);
-
-        return instrument == null
-            ? new ApiResult<InstrumentResponse>(HttpStatusCode.NotFound, message: null)
-            : new ApiResult<InstrumentResponse>(HttpStatusCode.OK, new InstrumentResponse(instrument.Id, instrument.Name, instrument.Category!.Name, instrument.Students));
     }
 
-    public async Task<ApiResult<Instrument>> UpdateInstrumentAsync(int id, UpdateInstrumentPut request)
+    public async Task DeleteAsync(Instrument instrument)
     {
-        var instrument = await _context.Instrument
-            .SingleOrDefaultAsync(x => x.Id == id);
-        if (instrument == null)
-        {
-            return new ApiResult<Instrument>(HttpStatusCode.NotFound, $"Instrument ID {id} not found");
+        _context.Remove(instrument);
+        await CommitAsync();
+    }
 
-        }
-
-        if (!await CategoryExistsAsync(request.NewCategoryId)) // foreign key
-        {
-            return new ApiResult<Instrument>(HttpStatusCode.NotFound, $"Category: {request.NewCategoryId} not found");
-        }
-
-        if (await InstrumentExistsAsync(request.NewInstrumentName))
-        {
-            return new ApiResult<Instrument>(HttpStatusCode.Conflict, $"Instrument with name {request.NewInstrumentName}, is already in the database");
-        }
-
-        instrument.Name = request.NewInstrumentName;
-        instrument.CategoryId = request.NewCategoryId;
-        await _context.SaveChangesAsync();
-
-        return new ApiResult<Instrument>(HttpStatusCode.OK, instrument);
+    public async Task InsertAsync(Instrument instrument)
+    {
+        _context.Add(instrument);
+        await CommitAsync();
     }
 
     public async Task<ApiResult<Instrument>> CreateInstrumentAsync([FromBody] CreateInstrumentRequest request)
@@ -119,13 +96,17 @@ public class InstrumentService : IInstrumentService
         return new ApiResult<Instrument>(HttpStatusCode.NoContent, data: null);
     }
 
-    private async Task<bool> CategoryExistsAsync(int categoryId)
+    public async Task<bool> CategoryExistsAsync(int categoryId)
     {
         return await _context.Category.AnyAsync(x => x.Id == categoryId);
     }
 
-    private async Task<bool> InstrumentExistsAsync(string name)
+    public async Task<bool> InstrumentExistsAsync(string name)
     {
         return await _context.Instrument.AnyAsync(x => x.Name == name);
+    }
+    public async Task CommitAsync()
+    {
+        await _context.SaveChangesAsync();
     }
 }

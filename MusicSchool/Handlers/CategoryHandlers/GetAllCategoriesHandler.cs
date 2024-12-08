@@ -3,7 +3,7 @@ using MusicSchool.Queries;
 using MusicSchool.Responses;
 using MusicSchool.Services.Interfaces;
 
-namespace MusicSchool.Handlers;
+namespace MusicSchool.Handlers.CategoryHandlers;
 
 public class GetAllCategoriesHandler : IRequestHandler<GetAllCategoriesQuery, IEnumerable<CategoryResponse>>
 {

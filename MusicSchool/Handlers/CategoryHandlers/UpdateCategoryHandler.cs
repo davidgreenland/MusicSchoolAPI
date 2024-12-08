@@ -5,7 +5,7 @@ using MusicSchool.Responses;
 using MusicSchool.Services.Interfaces;
 using System.Net;
 
-namespace MusicSchool.Handlers;
+namespace MusicSchool.Handlers.CategoryHandlers;
 
 public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryCommand, ApiResult<Category>>
 {

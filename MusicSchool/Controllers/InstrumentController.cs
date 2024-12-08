@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using MusicSchool.Commands.InstrumentCommands;
 using MusicSchool.Models;
+using MusicSchool.Queries;
 using MusicSchool.Requests.Instrument;
 using MusicSchool.Responses;
 using MusicSchool.Services.Interfaces;
@@ -10,36 +13,38 @@ namespace MusicSchool.Controllers;
 [ApiController]
 public class InstrumentController : ControllerBase
 {
-    private readonly IInstrumentService _instrumentService;
+    private readonly IMediator _mediator;
 
-    public InstrumentController(IInstrumentService instrumentService)
+    public InstrumentController(IMediator mediator)
     {
-        _instrumentService = instrumentService;
+        _mediator = mediator;
     }
 
     // GET: api/Instrument
     [HttpGet]
     public async Task<ActionResult<IEnumerable<InstrumentResponse>>> GetInstruments()
     {
-        var instruments = await _instrumentService.GetAllInstrumentsAsync();
+        var instruments = await _mediator.Send(new GetAllInstrumentsQuery());
 
-        return HandleApiResponse(instruments);
+        return Ok(instruments);
     }
 
     // GET: api/Instrument/5
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<InstrumentResponse>> GetInstrument(int id)
+    public async Task<ActionResult<InstrumentResponse>> GetInstrumentById(int id)
     {
-        var response = await _instrumentService.GetInstrumentAsync(id);
+        var instrument = await _mediator.Send(new GetInstrumentByIdQuery(id));
 
-        return HandleApiResponse(response);
+        return instrument == null
+            ? NotFound("Id not found")
+            : Ok(instrument);
     }
 
     // PUT: api/Instrument/1
     [HttpPut("{id:int}")]
     public async Task<ActionResult<Instrument>> UpdateInstrument(int id, [FromBody] UpdateInstrumentPut request)
     {
-        var response = await _instrumentService.UpdateInstrumentAsync(id, request);
+        var response = await _mediator.Send(new UpdateInstrumentCommand(id, request.NewName, request.NewCategoryId));
 
         return HandleApiResponse(response);
     }
@@ -53,14 +58,14 @@ public class InstrumentController : ControllerBase
         return HandleApiResponse(response);
     }
 
-    // DELETE: api/Instrument/5
-    [HttpDelete("{id:int}")]
-    public async Task<ActionResult> DeleteInstrument(int id)
-    {
-        var response = await _instrumentService.DeleteInstrumentAsync(id);
+    //// DELETE: api/Instrument/5
+    //[HttpDelete("{id:int}")]
+    //public async Task<ActionResult> DeleteInstrument(int id)
+    //{
+    //    var response = await _instrumentService.DeleteInstrumentAsync(id);
 
-        return HandleApiResponse(response);
-    }
+    //    return HandleApiResponse(response);
+    //}
 
     private ObjectResult HandleApiResponse<T>(ApiResult<T> response) where T : class
     {
