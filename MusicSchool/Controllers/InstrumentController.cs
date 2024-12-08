@@ -53,7 +53,7 @@ public class InstrumentController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Instrument>> CreateInstrument([FromBody] CreateInstrumentRequest request)
     {
-        var response = await _instrumentService.CreateInstrumentAsync(request);
+        var response = await _mediator.Send(new CreateInstrumentCommand(request.Name, request.CategoryId));
 
         return HandleApiResponse(response);
     }

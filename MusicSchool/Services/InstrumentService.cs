@@ -43,34 +43,6 @@ public class InstrumentService : IInstrumentService
         await CommitAsync();
     }
 
-    public async Task<ApiResult<Instrument>> CreateInstrumentAsync([FromBody] CreateInstrumentRequest request)
-    {
-        var existingInstrument = await _context.Instrument
-            .Where(x => x.CategoryId == request.CategoryId)
-            .SingleOrDefaultAsync(x => x.Name == request.Name);
-
-        if (existingInstrument != null)
-        {
-            return new ApiResult<Instrument>(HttpStatusCode.Conflict, $"Instrument {request.Name} already exists");
-        }
-
-        if (!await CategoryExistsAsync(request.CategoryId))
-        {
-            return new ApiResult<Instrument>(HttpStatusCode.NotFound, $"Category: {request.CategoryId} not found");
-        }
-
-        var newInstrument = new Instrument
-        {
-            Name = request.Name,
-            CategoryId = request.CategoryId,
-        };
-
-        _context.Instrument.Add(newInstrument);
-        await _context.SaveChangesAsync();
-
-        return new ApiResult<Instrument>(HttpStatusCode.Created, newInstrument);
-    }
-
     public async Task<ApiResult<Instrument>> DeleteInstrumentAsync(int id)
     {
         var instrument = await _context.Instrument
@@ -105,6 +77,7 @@ public class InstrumentService : IInstrumentService
     {
         return await _context.Instrument.AnyAsync(x => x.Name == name);
     }
+
     public async Task CommitAsync()
     {
         await _context.SaveChangesAsync();

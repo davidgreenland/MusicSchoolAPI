@@ -8,9 +8,9 @@ public interface IInstrumentService
 {
     Task<IEnumerable<Instrument>> GetAllInstrumentsAsync();
     Task<Instrument?> GetInstrumentByIdAsync(int id);
-    Task<ApiResult<Instrument>> CreateInstrumentAsync(CreateInstrumentRequest request);
-    Task<ApiResult<Instrument>> DeleteInstrumentAsync(int id);
     Task<bool> CategoryExistsAsync(int id);
     Task<bool> InstrumentExistsAsync(string name);
+    Task InsertAsync(Instrument instrument);
+    Task DeleteAsync(Instrument instrument);
     Task CommitAsync();
 }
