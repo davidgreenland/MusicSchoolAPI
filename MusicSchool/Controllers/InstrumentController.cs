@@ -53,24 +53,17 @@ public class InstrumentController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Instrument>> CreateInstrument([FromBody] CreateInstrumentRequest request)
     {
-        var response = await _mediator.Send(new CreateInstrumentCommand(request.Name, request.CategoryId));
+        var instrument = await _mediator.Send(new CreateInstrumentCommand(request.Name, request.CategoryId));
 
-        return HandleApiResponse(response);
+        return CreatedAtAction(nameof(GetInstrumentById), new { id = instrument.Id }, instrument);
     }
 
     // DELETE: api/Instrument/5
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> DeleteInstrument(int id)
     {
-        var response = await _mediator.Send(new DeleteInstrumentByIdCommand(id));
+        await _mediator.Send(new DeleteInstrumentByIdCommand(id));
 
-        return HandleApiResponse(response);
-    }
-
-    private ObjectResult HandleApiResponse<T>(ApiResult<T> response) where T : class
-    {
-        return response.IsSuccess
-            ? StatusCode(response.StatusCode, response.Data)
-            : StatusCode(response.StatusCode, response.Message);
+        return NoContent();
     }
 }
