@@ -22,8 +22,8 @@ public class SearchController : ControllerBase
     {
         var result = await _mediator.Send(new GetSearchResultsQuery(q));
 
-        return result.IsSuccess
-            ? StatusCode(result.StatusCode, result.Data)
-            : StatusCode(result.StatusCode, result.Message);
+        return result
+            .Select(x => new SearchResponse($"{x.FirstName} {x.LastName}", string.Join(", ", x.Instruments!.Select(x => x.Name))))
+            .ToList();
     }
 }

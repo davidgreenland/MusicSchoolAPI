@@ -44,9 +44,9 @@ public class InstrumentController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult<Instrument>> UpdateInstrument(int id, [FromBody] UpdateInstrumentPut request)
     {
-        var response = await _mediator.Send(new UpdateInstrumentCommand(id, request.NewName, request.NewCategoryId));
+        var updatedInstrument = await _mediator.Send(new UpdateInstrumentCommand(id, request.NewName, request.NewCategoryId));
 
-        return HandleApiResponse(response);
+        return Ok(updatedInstrument);
     }
 
     // POST: api/Instrument
