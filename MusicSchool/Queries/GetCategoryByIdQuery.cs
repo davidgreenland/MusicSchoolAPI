@@ -3,12 +3,4 @@ using MusicSchool.Responses;
 
 namespace MusicSchool.Queries;
 
-public class GetCategoryByIdQuery : IRequest<CategoryResponse>
-{
-    public int Id { get; set; }
-
-    public GetCategoryByIdQuery(int id)
-    {
-        Id = id;
-    }
-}
+public record GetCategoryByIdQuery(int Id) : IRequest<CategoryResponse>;

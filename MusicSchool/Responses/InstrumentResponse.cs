@@ -17,7 +17,7 @@ public class InstrumentResponse
 
     public InstrumentResponse(int id, string name, string categoryName, IEnumerable<Student>? students = null) : this(id, name, categoryName)
     {
-        Students = students?.Select(x => new StudentResponse(x.Id, $"{x.FirstName} {x.LastName}", x.DateOfBirth));
+        Students = students?.Select(x => new StudentResponse(x.Id, x.FirstName, x.LastName, x.DateOfBirth));
     }
 
     public InstrumentResponse(int id, string name, string categoryName) : this(id, name)

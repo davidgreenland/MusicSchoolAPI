@@ -1,6 +1,4 @@
 ﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
-using MusicSchool.Commands;
 using MusicSchool.Commands.InstrumentCommands;
 using MusicSchool.Models;
 using MusicSchool.Responses;

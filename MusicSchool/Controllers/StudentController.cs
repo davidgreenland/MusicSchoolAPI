@@ -1,9 +1,10 @@
-﻿using Azure;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using MusicSchool.Commands.StudentCommands;
 using MusicSchool.Models;
+using MusicSchool.Queries;
 using MusicSchool.Requests.Student;
 using MusicSchool.Responses;
-using MusicSchool.Services.Interfaces;
 
 namespace MusicSchool.Controllers;
 
@@ -11,36 +12,38 @@ namespace MusicSchool.Controllers;
 [ApiController]
 public class StudentController : ControllerBase
 {
-    private readonly IStudentService _studentService;
+    private readonly IMediator _mediator;
 
-    public StudentController(IStudentService studentService)
+    public StudentController(IMediator mediator)
     {
-        _studentService = studentService;
+        _mediator = mediator;
     }
 
     // GET: api/Student
     [HttpGet]
     public async Task<ActionResult<IEnumerable<StudentResponse>>> GetStudent()
     {
-        var students = await _studentService.GetAllCategoriesAsync();
+        var students = await _mediator.Send(new GetAllStudentsQuery());
 
-        return HandleApiResponse(students);
+        return Ok(students);
     }
 
     // GET: api/Student/5
     [HttpGet("{id:int}")]
     public async Task<ActionResult<StudentResponse>> GetStudent(int id)
     {
-        var response = await _studentService.GetStudentAsync(id);
+        var student = await _mediator.Send(new GetStudentByIdQuery(id));
 
-        return HandleApiResponse(response);
+        return student == null
+            ? NotFound("Id not found")
+            : Ok(student);
     }
 
     // PUT: api/Student/1
     [HttpPut("{id:int}")]
     public async Task<ActionResult<StudentResponse>> UpdateInstrument(int id, [FromBody] UpdateStudentPut request)
     {
-        var response = await _studentService.UpdateInstrumentAsync(id, request);
+        var response = await _mediator.Send(new UpdateStudentCommand(id, request.NewFirstName, request.NewLastName, request.NewDateOfBirth));
 
         return HandleApiResponse(response);
     }
@@ -49,7 +52,7 @@ public class StudentController : ControllerBase
     [HttpPatch("{id:int}/instruments")]
     public async Task<ActionResult<StudentResponse>> UpdateStudentInstruments(int id, [FromBody] UpdateStudentInstrumentsPatch request)
     {
-        var response = await _studentService.UpdateStudentInstrumentsAsync(id, request);
+        var response = await _mediator.Send(new UpdateStudentInstrumentsCommand(id, request.NewInstrumentIds));
 
         return HandleApiResponse(response);
     }
@@ -58,7 +61,7 @@ public class StudentController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Student>> CreateStudent([FromBody] CreateStudentRequest request)
     {
-        var response = await _studentService.CreateStudentAsync(request);
+        var response = await _mediator.Send(new CreateStudentCommand(request.FirstName, request.LastName, request.DateOfBirth));
 
         return HandleApiResponse(response);
     }
@@ -67,7 +70,7 @@ public class StudentController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> DeleteStudent(int id)
     {
-        var response = await _studentService.DeleteStudentAsync(id);
+        var response = await _mediator.Send(new DeleteStudentByIdCommand(id));
 
         return HandleApiResponse(response);
     }
