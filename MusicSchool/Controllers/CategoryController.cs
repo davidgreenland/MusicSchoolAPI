@@ -41,33 +41,26 @@ public class CategoryController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult<Category>> UpdateCategory(int id, [FromBody] UpdateCategory request)
     {
-        var response = await _mediator.Send(new UpdateCategoryCommand(id, request.NewCategoryName));
+        var category = await _mediator.Send(new UpdateCategoryCommand(id, request.NewCategoryName));
 
-        return HandleApiResponse(response);
+        return Ok(category);
     }
 
     // POST: api/category
     [HttpPost]
     public async Task<ActionResult<Category>> CreateCategory([FromBody] CreateCategoryRequest request)
     {
-        var response = await _mediator.Send(new CreateCategoryCommand(request.Name));
+        var category = await _mediator.Send(new CreateCategoryCommand(request.Name));
 
-        return HandleApiResponse(response);
+        return CreatedAtAction(nameof(GetCategoryById), new { id = category.Id }, category);
     }
 
     // DELETE: api/category/{id}
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> RemoveCategory(int id)
     {
-        var response = await _mediator.Send(new DeleteCategoryByIdCommand(id));
+        await _mediator.Send(new DeleteCategoryByIdCommand(id));
 
-        return HandleApiResponse(response);
-    }
-
-    private ObjectResult HandleApiResponse<T>(ApiResult<T> response) where T : class
-    {
-        return response.IsSuccess
-            ? StatusCode(response.StatusCode, response.Data)
-            : StatusCode(response.StatusCode, response.Message);
+        return NoContent();
     }
 }

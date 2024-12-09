@@ -4,4 +4,4 @@ using MusicSchool.Responses;
 
 namespace MusicSchool.Commands.InstrumentCommands;
 
-public record UpdateInstrumentCommand(int Id, string NewName, int NewCategoryId) : IRequest<ApiResult<Instrument>>;
+public record UpdateInstrumentCommand(int Id, string NewName, int NewCategoryId) : IRequest<Instrument>;

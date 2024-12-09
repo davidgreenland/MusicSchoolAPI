@@ -1,13 +1,13 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using MusicSchool.Commands.StudentCommands;
+using MusicSchool.Exceptions;
 using MusicSchool.Responses;
 using MusicSchool.Services.Interfaces;
-using System.Net;
 
 namespace MusicSchool.Handlers.StudentHandlers;
 
-public class UpdateStudentInstrumentsHandler : IRequestHandler<UpdateStudentInstrumentsCommand, ApiResult<StudentResponse>>
+public class UpdateStudentInstrumentsHandler : IRequestHandler<UpdateStudentInstrumentsCommand, StudentResponse>
 {
     private readonly IStudentService _studentService;
     private readonly IInstrumentService _instrumentService;
@@ -18,14 +18,14 @@ public class UpdateStudentInstrumentsHandler : IRequestHandler<UpdateStudentInst
         _instrumentService = instrumentService;
     }
 
-    public async Task<ApiResult<StudentResponse>> Handle(UpdateStudentInstrumentsCommand request, CancellationToken cancellationToken)
+    public async Task<StudentResponse> Handle(UpdateStudentInstrumentsCommand request, CancellationToken cancellationToken)
     {
         var student = await _studentService.GetStudentByIdAsync(request.Id);
         if (student == null)
         {
-            return new ApiResult<StudentResponse>(HttpStatusCode.NotFound, $"Student Id: {request.Id} not found");
-        }
-
+            throw new StudentNotFoundException(request.Id);
+        }    
+        
         var allInstruments = await _instrumentService.GetAllInstrumentsAsync();
 
         var validRequestedInstruments = allInstruments
@@ -34,12 +34,12 @@ public class UpdateStudentInstrumentsHandler : IRequestHandler<UpdateStudentInst
         if (validRequestedInstruments.Count != request.NewInstrumentIds.Count())
         {
             var invalidInstrumentIds = request.NewInstrumentIds.Except(validRequestedInstruments.Select(x => x.Id));
-            return new ApiResult<StudentResponse>(HttpStatusCode.NotFound, $"Invalid instrument IDs: {string.Join(", ", invalidInstrumentIds)}");
+            throw new InstrumentNotFoundException(string.Join(", ", invalidInstrumentIds));
         }
 
         student.Instruments = validRequestedInstruments;
         await _studentService.CommitAsync();
 
-        return new ApiResult<StudentResponse>(HttpStatusCode.OK, new StudentResponse(student.Id, student.FirstName, student.LastName, student.DateOfBirth, string.Join(", ", student.Instruments.Select(x => x.Name))));
+        return new StudentResponse(student.Id, student.FirstName, student.LastName, student.DateOfBirth, string.Join(", ", student.Instruments.Select(x => x.Name)));
     }
 }

@@ -1,13 +1,12 @@
 ﻿using MediatR;
 using MusicSchool.Commands.InstrumentCommands;
+using MusicSchool.Exceptions;
 using MusicSchool.Models;
-using MusicSchool.Responses;
 using MusicSchool.Services.Interfaces;
-using System.Net;
 
 namespace MusicSchool.Handlers.InstrumentHandlers;
 
-public class CreateInstrumentHandler : IRequestHandler<CreateInstrumentCommand, ApiResult<Instrument>>
+public class CreateInstrumentHandler : IRequestHandler<CreateInstrumentCommand, Instrument>
 {
     private readonly IInstrumentService _instrumentService;
 
@@ -16,16 +15,16 @@ public class CreateInstrumentHandler : IRequestHandler<CreateInstrumentCommand, 
         _instrumentService = instrumentService;
     }
 
-    public async Task<ApiResult<Instrument>> Handle(CreateInstrumentCommand request, CancellationToken cancellationToken)
+    public async Task<Instrument> Handle(CreateInstrumentCommand request, CancellationToken cancellationToken)
     {
         if (await _instrumentService.InstrumentExistsAsync(request.Name))
         {
-            return new ApiResult<Instrument>(HttpStatusCode.Conflict, $"Instrument {request.Name} already exists");
+            throw new EntityNameConflictException(request.Name);
         }
 
         if (!await _instrumentService.CategoryExistsAsync(request.CategoryId))
         {
-            return new ApiResult<Instrument>(HttpStatusCode.NotFound, $"Category: {request.CategoryId} not found");
+            throw new CategoryNotFoundException(request.CategoryId);
         }
 
         var instrument = new Instrument
@@ -36,6 +35,6 @@ public class CreateInstrumentHandler : IRequestHandler<CreateInstrumentCommand, 
 
         await _instrumentService.InsertAsync(instrument);
 
-        return new ApiResult<Instrument>(HttpStatusCode.Created, instrument);
+        return instrument;
     }
 }

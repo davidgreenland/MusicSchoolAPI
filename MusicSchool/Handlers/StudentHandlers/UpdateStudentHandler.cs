@@ -1,13 +1,12 @@
 ﻿using MediatR;
 using MusicSchool.Commands.StudentCommands;
+using MusicSchool.Exceptions;
 using MusicSchool.Models;
-using MusicSchool.Responses;
 using MusicSchool.Services.Interfaces;
-using System.Net;
 
 namespace MusicSchool.Handlers.StudentHandlers;
 
-public class UpdateStudentHandler : IRequestHandler<UpdateStudentCommand, ApiResult<Student>>
+public class UpdateStudentHandler : IRequestHandler<UpdateStudentCommand, Student>
 {
     private readonly IStudentService _studentService;
 
@@ -15,14 +14,9 @@ public class UpdateStudentHandler : IRequestHandler<UpdateStudentCommand, ApiRes
     {
         _studentService = studentService;
     }
-
-    public async Task<ApiResult<Student>> Handle(UpdateStudentCommand request, CancellationToken cancellationToken)
+    public async Task<Student> Handle(UpdateStudentCommand request, CancellationToken cancellationToken)
     {
-        var student = await _studentService.GetStudentByIdAsync(request.Id);
-        if (student == null)
-        {
-            return new ApiResult<Student>(HttpStatusCode.NotFound, "Id not found");
-        }
+        var student = await _studentService.GetStudentByIdAsync(request.Id) ?? throw new StudentNotFoundException(request.Id);
 
         student.FirstName = request.NewFirstName;
         student.LastName = request.NewLastName;
@@ -30,6 +24,6 @@ public class UpdateStudentHandler : IRequestHandler<UpdateStudentCommand, ApiRes
 
         await _studentService.CommitAsync();
 
-        return new ApiResult<Student>(HttpStatusCode.OK, student);
+        return student;
     }
 }
