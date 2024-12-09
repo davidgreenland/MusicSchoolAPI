@@ -1,9 +1,9 @@
 using MediatR;
 using MusicSchool.Models;
-using MusicSchool.Commands;
 using MusicSchool.Responses;
 using MusicSchool.Services.Interfaces;
 using System.Net;
+using MusicSchool.Commands.CategoryCommands;
 
 namespace MusicSchool.Handlers.CategoryHandlers;
 

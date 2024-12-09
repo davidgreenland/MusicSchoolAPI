@@ -1,6 +1,4 @@
 ﻿using MediatR;
-using MusicSchool.Commands.StudentCommands;
-using MusicSchool.Models;
 using MusicSchool.Queries;
 using MusicSchool.Responses;
 using MusicSchool.Services.Interfaces;

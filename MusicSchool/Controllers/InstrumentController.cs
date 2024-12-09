@@ -4,7 +4,7 @@ using MusicSchool.Commands;
 using MusicSchool.Commands.InstrumentCommands;
 using MusicSchool.Models;
 using MusicSchool.Queries;
-using MusicSchool.Requests.Instrument;
+using MusicSchool.Requests.InstrumentRequests;
 using MusicSchool.Responses;
 
 namespace MusicSchool.Controllers;

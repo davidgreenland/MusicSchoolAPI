@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using MusicSchool.Commands;
+using MusicSchool.Commands.CategoryCommands;
 using MusicSchool.Models;
 using MusicSchool.Responses;
 using MusicSchool.Services.Interfaces;

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MusicSchool.Commands.StudentCommands;
 using MusicSchool.Models;
 using MusicSchool.Queries;
-using MusicSchool.Requests.Student;
+using MusicSchool.Requests.StudentRequests;
 using MusicSchool.Responses;
 
 namespace MusicSchool.Controllers;
@@ -41,7 +41,7 @@ public class StudentController : ControllerBase
 
     // PUT: api/Student/1
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<StudentResponse>> UpdateInstrument(int id, [FromBody] UpdateStudentPut request)
+    public async Task<ActionResult<StudentResponse>> UpdateStudent(int id, [FromBody] UpdateStudentPut request)
     {
         var response = await _mediator.Send(new UpdateStudentCommand(id, request.NewFirstName, request.NewLastName, request.NewDateOfBirth));
 

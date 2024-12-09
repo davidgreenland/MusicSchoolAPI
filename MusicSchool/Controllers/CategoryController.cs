@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using MusicSchool.Commands;
+using MusicSchool.Commands.CategoryCommands;
 using MusicSchool.Models;
 using MusicSchool.Queries;
 using MusicSchool.Requests.CategoryRequests;

@@ -1,6 +1,4 @@
 ﻿using MusicSchool.Models;
-using MusicSchool.Requests.Instrument;
-using MusicSchool.Responses;
 
 namespace MusicSchool.Services.Interfaces;
 

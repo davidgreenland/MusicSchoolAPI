@@ -1,4 +1,4 @@
-﻿namespace MusicSchool.Requests.Instrument;
+﻿namespace MusicSchool.Requests.InstrumentRequests;
 
 public class CreateInstrumentRequest
 {

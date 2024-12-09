@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using MusicSchool.Commands.StudentCommands;
 using MusicSchool.Responses;
@@ -32,7 +31,7 @@ public class UpdateStudentInstrumentsHandler : IRequestHandler<UpdateStudentInst
         var validRequestedInstruments = allInstruments
             .Where(i => request.NewInstrumentIds.Contains(i.Id)).ToList();
 
-        if (validRequestedInstruments.Count() != request.NewInstrumentIds.Count())
+        if (validRequestedInstruments.Count != request.NewInstrumentIds.Count())
         {
             var invalidInstrumentIds = request.NewInstrumentIds.Except(validRequestedInstruments.Select(x => x.Id));
             return new ApiResult<StudentResponse>(HttpStatusCode.NotFound, $"Invalid instrument IDs: {string.Join(", ", invalidInstrumentIds)}");

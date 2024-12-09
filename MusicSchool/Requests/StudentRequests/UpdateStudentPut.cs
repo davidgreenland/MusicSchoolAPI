@@ -1,4 +1,4 @@
-﻿namespace MusicSchool.Requests.Student;
+﻿namespace MusicSchool.Requests.StudentRequests;
 
 public class UpdateStudentPut
 {
