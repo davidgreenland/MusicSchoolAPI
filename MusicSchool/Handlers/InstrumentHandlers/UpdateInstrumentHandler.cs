@@ -31,7 +31,7 @@ public class UpdateInstrumentHandler : IRequestHandler<UpdateInstrumentCommand, 
 
         if (instrument.Name != request.NewName && await _instrumentService.InstrumentExistsAsync(request.NewName))
         {
-            throw new InstrumentNameConflictException(request.NewName);
+            throw new EntityNameConflictException(request.NewName);
         }
         
         instrument.Name = request.NewName;

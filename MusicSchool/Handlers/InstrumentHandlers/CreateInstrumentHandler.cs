@@ -19,7 +19,7 @@ public class CreateInstrumentHandler : IRequestHandler<CreateInstrumentCommand, 
     {
         if (await _instrumentService.InstrumentExistsAsync(request.Name))
         {
-            throw new InstrumentNameConflictException(request.Name);
+            throw new EntityNameConflictException(request.Name);
         }
 
         if (!await _instrumentService.CategoryExistsAsync(request.CategoryId))

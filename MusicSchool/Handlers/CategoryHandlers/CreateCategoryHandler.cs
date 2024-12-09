@@ -2,12 +2,12 @@ using MediatR;
 using MusicSchool.Models;
 using MusicSchool.Responses;
 using MusicSchool.Services.Interfaces;
-using System.Net;
 using MusicSchool.Commands.CategoryCommands;
+using MusicSchool.Exceptions;
 
 namespace MusicSchool.Handlers.CategoryHandlers;
 
-public class CreateCategoryHandler : IRequestHandler<CreateCategoryCommand, ApiResult<Category>>
+public class CreateCategoryHandler : IRequestHandler<CreateCategoryCommand, Category>
 {
     private readonly ICategoryService _categoryService;
 
@@ -16,17 +16,17 @@ public class CreateCategoryHandler : IRequestHandler<CreateCategoryCommand, ApiR
         _categoryService = categoryService;
     }
 
-    public async Task<ApiResult<Category>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
+    public async Task<Category> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
     {
         if (await _categoryService.CheckCategoryExistsAsync(request.Name))
         {
-            return new ApiResult<Category>(HttpStatusCode.Conflict, $"Category with name {request.Name} already exists");
+            throw new EntityNameConflictException(request.Name);
         }
 
         var newCategory = new Category { Name = request.Name };
 
         await _categoryService.InsertAsync(newCategory);
 
-        return new ApiResult<Category>(HttpStatusCode.OK, newCategory);
+        return newCategory;
     }
 }
