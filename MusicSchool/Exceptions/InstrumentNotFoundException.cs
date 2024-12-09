@@ -8,4 +8,8 @@ public class InstrumentNotFoundException : BaseException
         : base($"Instrument with id {id} not found", HttpStatusCode.NotFound)
     {
     }
+    public InstrumentNotFoundException(string id)
+    : base($"Instrument with id {id}, not found", HttpStatusCode.NotFound)
+    {
+    }
 }

@@ -1,13 +1,11 @@
 ﻿using MediatR;
 using MusicSchool.Commands.StudentCommands;
-using MusicSchool.Models;
-using MusicSchool.Responses;
+using MusicSchool.Exceptions;
 using MusicSchool.Services.Interfaces;
-using System.Net;
 
 namespace MusicSchool.Handlers.StudentHandlers;
 
-public class DeleteStudentByIdHandler : IRequestHandler<DeleteStudentByIdCommand, ApiResult<Student>>
+public class DeleteStudentByIdHandler : IRequestHandler<DeleteStudentByIdCommand>
 {
     private readonly IStudentService _studentService;
 
@@ -16,16 +14,12 @@ public class DeleteStudentByIdHandler : IRequestHandler<DeleteStudentByIdCommand
         _studentService = studentService;
     }
 
-    public async Task<ApiResult<Student>> Handle(DeleteStudentByIdCommand request, CancellationToken cancellationToken)
+    public async Task Handle(DeleteStudentByIdCommand request, CancellationToken cancellationToken)
     {
-        var student = await _studentService.GetStudentByIdAsync(request.Id);
-        if (student == null)
-        {
-            return new ApiResult<Student>(HttpStatusCode.NotFound, $"Student: {request.Id} not found");
-        }
+        var student = await _studentService.GetStudentByIdAsync(request.Id) ?? throw new StudentNotFoundException(request.Id);
 
         await _studentService.DeleteAsync(student);
 
-        return new ApiResult<Student>(HttpStatusCode.NoContent, message: null);
+        return; // todo check this
     }
 }

@@ -1,13 +1,11 @@
 ﻿using MediatR;
 using MusicSchool.Commands.StudentCommands;
 using MusicSchool.Models;
-using MusicSchool.Responses;
 using MusicSchool.Services.Interfaces;
-using System.Net;
 
 namespace MusicSchool.Handlers.StudentHandlers;
 
-public class CreateStudentHandler : IRequestHandler<CreateStudentCommand, ApiResult<Student>>
+public class CreateStudentHandler : IRequestHandler<CreateStudentCommand, Student>
 {
     private readonly IStudentService _studentService;
 
@@ -16,7 +14,7 @@ public class CreateStudentHandler : IRequestHandler<CreateStudentCommand, ApiRes
         _studentService = studentService;
     }
 
-    public async Task<ApiResult<Student>> Handle(CreateStudentCommand request, CancellationToken cancellationToken)
+    public async Task<Student> Handle(CreateStudentCommand request, CancellationToken cancellationToken)
     {
         var student = new Student
         {
@@ -27,6 +25,6 @@ public class CreateStudentHandler : IRequestHandler<CreateStudentCommand, ApiRes
 
         await _studentService.InsertAsync(student);
 
-        return new ApiResult<Student>(HttpStatusCode.Created, student);
+        return student;
     }
 }
