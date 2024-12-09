@@ -1,0 +1,36 @@
+﻿using MediatR;
+using MusicSchool.Commands.CategoryCommands;
+using MusicSchool.Exceptions;
+using MusicSchool.Models;
+using MusicSchool.Responses;
+using MusicSchool.Services.Interfaces;
+using System.Net;
+
+namespace MusicSchool.Handlers.CategoryHandlers;
+
+public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryByIdCommand>
+{
+    private readonly ICategoryService _categoryService;
+
+    public DeleteCategoryHandler(ICategoryService categoryService)
+    {
+        _categoryService = categoryService;
+    }
+
+    public async Task Handle(DeleteCategoryByIdCommand request, CancellationToken cancellationToken)
+    {
+        var category = await _categoryService.GetCategoryByIdAsync(request.Id);
+        if (category == null)
+        {
+            throw new CategoryNotFoundException(request.Id);
+        }
+        if (await _categoryService.CategoryHasInstrument(request.Id))
+        {
+            throw new DeleteEntityConflict();
+        }
+
+        await _categoryService.DeleteAsync(category);
+
+        return; // todo check
+    }
+}

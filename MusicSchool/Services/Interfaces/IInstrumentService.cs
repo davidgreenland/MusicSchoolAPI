@@ -1,14 +1,15 @@
 ﻿using MusicSchool.Models;
-using MusicSchool.Requests.Instrument;
-using MusicSchool.Responses;
 
 namespace MusicSchool.Services.Interfaces;
 
 public interface IInstrumentService
 {
-    Task<ApiResponse<IEnumerable<InstrumentResponse>>> GetAllInstrumentsAsync();
-    Task<ApiResponse<InstrumentResponse>> GetInstrumentAsync(int id);
-    Task<ApiResponse<Instrument>> UpdateInstrumentAsync(int id, UpdateInstrumentPut request);
-    Task<ApiResponse<Instrument>> CreateInstrumentAsync(CreateInstrumentRequest request);
-    Task<ApiResponse<Instrument>> DeleteInstrumentAsync(int id);
+    Task<IEnumerable<Instrument>> GetAllInstrumentsAsync();
+    Task<Instrument?> GetInstrumentByIdAsync(int id);
+    Task<bool> CategoryExistsAsync(int id);
+    Task<bool> InstrumentExistsAsync(string name);
+    Task<bool> InstrumentHasStudentsAsync(int id);
+    Task InsertAsync(Instrument instrument);
+    Task DeleteAsync(Instrument instrument);
+    Task CommitAsync();
 }

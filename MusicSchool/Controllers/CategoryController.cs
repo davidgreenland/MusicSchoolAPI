@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using MusicSchool.Commands.CategoryCommands;
 using MusicSchool.Models;
-using MusicSchool.Requests.Category;
+using MusicSchool.Queries;
+using MusicSchool.Requests.CategoryRequests;
 using MusicSchool.Responses;
-using MusicSchool.Services.Interfaces;
 
 namespace MusicSchool.Controllers;
 
@@ -10,60 +12,55 @@ namespace MusicSchool.Controllers;
 [ApiController]
 public class CategoryController : ControllerBase
 {
-    private readonly ICategoryService _categoryService;
+    private readonly IMediator _mediator;
 
-    public CategoryController(ICategoryService categoryService)
+    public CategoryController(IMediator mediator)
     {
-        _categoryService = categoryService;
+        _mediator = mediator;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoryResponse>>> GetAllCategories()
     {
-        var categories = await _categoryService.GetAllCategoriesAsync();
+        var categories = await _mediator.Send(new GetAllCategoriesQuery());
 
-        return HandleApiResponse(categories);
+        return Ok(categories);
     }
 
     // GET: api/Category/5
     [HttpGet("{id:int}")]
     public async Task<ActionResult<CategoryResponse>> GetCategoryById(int id)
     {
-        var response = await _categoryService.GetCategoryAsync(id);
+        var category = await _mediator.Send(new GetCategoryByIdQuery(id));
 
-        return HandleApiResponse(response);
+        return category == null
+            ? NotFound("Id not found")
+            : Ok(category);
     }
 
     [HttpPut("{id:int}")]
     public async Task<ActionResult<Category>> UpdateCategory(int id, [FromBody] UpdateCategory request)
     {
-        var response = await _categoryService.UpdateCategoryAsync(id, request);
+        var category = await _mediator.Send(new UpdateCategoryCommand(id, request.NewCategoryName));
 
-        return HandleApiResponse(response);
+        return Ok(category);
     }
 
     // POST: api/category
     [HttpPost]
     public async Task<ActionResult<Category>> CreateCategory([FromBody] CreateCategoryRequest request)
     {
-        var response = await _categoryService.CreateCategoryAsync(request);
+        var category = await _mediator.Send(new CreateCategoryCommand(request.Name));
 
-        return HandleApiResponse(response);
+        return CreatedAtAction(nameof(GetCategoryById), new { id = category.Id }, category);
     }
 
     // DELETE: api/category/{id}
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> RemoveCategory(int id)
     {
-        var response = await _categoryService.DeleteCategoryAsync(id);
+        await _mediator.Send(new DeleteCategoryByIdCommand(id));
 
-        return HandleApiResponse(response);
-    }
-
-    private ObjectResult HandleApiResponse<T>(ApiResponse<T> response) where T : class
-    {
-        return response.IsSuccess
-            ? StatusCode(response.StatusCode, response.Data)
-            : StatusCode(response.StatusCode, response.Message);
+        return NoContent();
     }
 }

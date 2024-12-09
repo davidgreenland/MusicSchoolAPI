@@ -7,7 +7,7 @@ public class CategoryResponse
 {
     public int Id { get; set; }
 
-    //[JsonPropertyName("category")]
+    [JsonPropertyName("category")]
     public string Name { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

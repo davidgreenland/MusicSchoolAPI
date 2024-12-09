@@ -5,21 +5,23 @@ namespace MusicSchool.Responses;
 public class StudentResponse
 {
     public int Id { get; set; }
-    public string Name { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
     public DateOnly? DateOfBirth { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Instrument { get; set; }
 
-    public StudentResponse(int id, string name, DateOnly? dateOfBirth, string instrument) : this(id, name, dateOfBirth)
+    public StudentResponse(int id, string firstName, string lastName, DateOnly? dateOfBirth, string instrument) : this(id, firstName, lastName, dateOfBirth)
     {
         Instrument = instrument;
     }
 
-    public StudentResponse(int id, string name, DateOnly? dateOfBirth)
+    public StudentResponse(int id, string firstName, string lastName, DateOnly? dateOfBirth)
     {
         Id = id;
-        Name = name;
+        FirstName = firstName;
+        LastName = lastName;
         DateOfBirth = dateOfBirth;
     }
 }

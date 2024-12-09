@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using MusicSchool.Queries;
 using MusicSchool.Responses;
-using MusicSchool.Services.Interfaces;
 
 namespace MusicSchool.Controllers;
 
@@ -8,21 +9,21 @@ namespace MusicSchool.Controllers;
 [ApiController]
 public class SearchController : ControllerBase
 {
-    private readonly ISearchService _searchService;
+    private readonly IMediator _mediator;
 
-    public SearchController(ISearchService searchService)
+    public SearchController(IMediator mediator)
     {
-        _searchService = searchService;
+        _mediator = mediator;
     }
 
     // GET: api/Search?q=pet
     [HttpGet]
     public async Task<ActionResult<IEnumerable<SearchResponse>>> GetSearchResultsAsync([FromQuery] string q)
     {
-        var result = await _searchService.GetSearchResultsAsync(q);
+        var result = await _mediator.Send(new GetSearchResultsQuery(q));
 
-        return result.IsSuccess
-            ? StatusCode(result.StatusCode, result.Data)
-            : StatusCode(result.StatusCode, result.Message);
+        return result
+            .Select(x => new SearchResponse($"{x.FirstName} {x.LastName}", string.Join(", ", x.Instruments!.Select(x => x.Name))))
+            .ToList();
     }
 }
