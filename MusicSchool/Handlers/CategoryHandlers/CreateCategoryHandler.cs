@@ -20,7 +20,7 @@ public class CreateCategoryHandler : IRequestHandler<CreateCategoryCommand, Cate
     {
         if (await _categoryService.CheckCategoryExistsAsync(request.Name))
         {
-            throw new EntityNameConflictException(request.Name);
+            throw new NameConflictException(request.Name);
         }
 
         var newCategory = new Category { Name = request.Name };

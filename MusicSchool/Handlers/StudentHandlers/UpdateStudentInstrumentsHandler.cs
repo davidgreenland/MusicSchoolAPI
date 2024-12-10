@@ -20,11 +20,7 @@ public class UpdateStudentInstrumentsHandler : IRequestHandler<UpdateStudentInst
 
     public async Task<StudentResponse> Handle(UpdateStudentInstrumentsCommand request, CancellationToken cancellationToken)
     {
-        var student = await _studentService.GetStudentByIdAsync(request.Id);
-        if (student == null)
-        {
-            throw new StudentNotFoundException(request.Id);
-        }    
+        var student = await _studentService.GetStudentByIdAsync(request.Id) ??  throw new StudentNotFoundException(request.Id);  
         
         var allInstruments = await _instrumentService.GetAllInstrumentsAsync();
 
@@ -34,7 +30,7 @@ public class UpdateStudentInstrumentsHandler : IRequestHandler<UpdateStudentInst
         if (validRequestedInstruments.Count != request.NewInstrumentIds.Count())
         {
             var invalidInstrumentIds = request.NewInstrumentIds.Except(validRequestedInstruments.Select(x => x.Id));
-            throw new InstrumentNotFoundException(string.Join(", ", invalidInstrumentIds));
+            throw new NotFoundException($"Instrument ID {string.Join(", ", invalidInstrumentIds)}, not found");
         }
 
         student.Instruments = validRequestedInstruments;
