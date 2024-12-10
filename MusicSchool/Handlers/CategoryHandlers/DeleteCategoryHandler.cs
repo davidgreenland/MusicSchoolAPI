@@ -19,14 +19,11 @@ public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryByIdCommand>
 
     public async Task Handle(DeleteCategoryByIdCommand request, CancellationToken cancellationToken)
     {
-        var category = await _categoryService.GetCategoryByIdAsync(request.Id);
-        if (category == null)
-        {
-            throw new CategoryNotFoundException(request.Id);
-        }
+        var category = await _categoryService.GetCategoryByIdAsync(request.Id) ?? throw new NotFoundException($"Category {request.Id} not found");
+
         if (await _categoryService.CategoryHasInstrument(request.Id))
         {
-            throw new DeleteEntityConflict();
+            throw new DeleteEntityConflict("Unable to delete category");
         }
 
         await _categoryService.DeleteAsync(category);

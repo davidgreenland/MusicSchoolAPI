@@ -16,7 +16,7 @@ public class UpdateStudentHandler : IRequestHandler<UpdateStudentCommand, Studen
     }
     public async Task<Student> Handle(UpdateStudentCommand request, CancellationToken cancellationToken)
     {
-        var student = await _studentService.GetStudentByIdAsync(request.Id) ?? throw new StudentNotFoundException(request.Id);
+        var student = await _studentService.GetStudentByIdAsync(request.Id) ?? throw new NotFoundException($"Student {request.Id} not found");
 
         student.FirstName = request.NewFirstName;
         student.LastName = request.NewLastName;

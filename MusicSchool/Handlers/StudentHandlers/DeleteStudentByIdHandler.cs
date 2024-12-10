@@ -16,7 +16,7 @@ public class DeleteStudentByIdHandler : IRequestHandler<DeleteStudentByIdCommand
 
     public async Task Handle(DeleteStudentByIdCommand request, CancellationToken cancellationToken)
     {
-        var student = await _studentService.GetStudentByIdAsync(request.Id) ?? throw new StudentNotFoundException(request.Id);
+        var student = await _studentService.GetStudentByIdAsync(request.Id) ?? throw new NotFoundException($"Student {request.Id} not found");
 
         await _studentService.DeleteAsync(student);
 

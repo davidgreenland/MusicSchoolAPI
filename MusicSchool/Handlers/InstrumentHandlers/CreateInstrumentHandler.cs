@@ -19,12 +19,12 @@ public class CreateInstrumentHandler : IRequestHandler<CreateInstrumentCommand, 
     {
         if (await _instrumentService.InstrumentExistsAsync(request.Name))
         {
-            throw new EntityNameConflictException(request.Name);
+            throw new NameConflictException(request.Name);
         }
 
         if (!await _instrumentService.CategoryExistsAsync(request.CategoryId))
         {
-            throw new CategoryNotFoundException(request.CategoryId);
+            throw new NotFoundException($"Category {request.CategoryId} not found");
         }
 
         var instrument = new Instrument

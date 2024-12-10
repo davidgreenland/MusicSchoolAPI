@@ -3,7 +3,7 @@ using MusicSchool.Commands;
 using MusicSchool.Exceptions;
 using MusicSchool.Services.Interfaces;
 
-namespace MusicSchool.Handlers.CategoryHandlers;
+namespace MusicSchool.Handlers.InstrumentHandlers;
 
 public class DeleteInstrumentByIdHandler : IRequestHandler<DeleteInstrumentByIdCommand>
 {
@@ -16,11 +16,11 @@ public class DeleteInstrumentByIdHandler : IRequestHandler<DeleteInstrumentByIdC
 
     public async Task Handle(DeleteInstrumentByIdCommand request, CancellationToken cancellationToken)
     {
-        var instrument = await _instrumentService.GetInstrumentByIdAsync(request.Id) ?? throw new InstrumentNotFoundException(request.Id);
+        var instrument = await _instrumentService.GetInstrumentByIdAsync(request.Id) ?? throw new NotFoundException($"Instrument {request.Id} not found");
 
         if (await _instrumentService.InstrumentHasStudentsAsync(request.Id))
         {
-            throw new DeleteEntityConflict();
+            throw new DeleteEntityConflict("Unable to delete instrument");
         }
 
         await _instrumentService.DeleteAsync(instrument);

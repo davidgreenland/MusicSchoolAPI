@@ -2,9 +2,9 @@
 
 namespace MusicSchool.Exceptions;
 
-public class EntityNameConflictException : BaseException
+public class NameConflictException : BaseException
 {
-    public EntityNameConflictException(string name)
+    public NameConflictException(string name)
         : base($"Conflict: {name} is already in the database", HttpStatusCode.Conflict)
     {
     }

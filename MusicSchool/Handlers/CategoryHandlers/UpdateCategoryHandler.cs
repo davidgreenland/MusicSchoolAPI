@@ -2,9 +2,7 @@
 using MusicSchool.Commands.CategoryCommands;
 using MusicSchool.Exceptions;
 using MusicSchool.Models;
-using MusicSchool.Responses;
 using MusicSchool.Services.Interfaces;
-using System.Net;
 
 namespace MusicSchool.Handlers.CategoryHandlers;
 
@@ -19,11 +17,11 @@ public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryCommand, Cate
 
     public async Task<Category> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
     {
-        var category = await _categoryService.GetCategoryByIdAsync(request.Id) ?? throw new CategoryNotFoundException(request.Id);
+        var category = await _categoryService.GetCategoryByIdAsync(request.Id) ?? throw new NotFoundException($"Category {request.Id} not found");
 
         if (await _categoryService.CheckCategoryExistsAsync(request.NewName))
         {
-            throw new EntityNameConflictException(request.NewName);
+            throw new NameConflictException(request.NewName);
         }
 
         category.Name = request.NewName;

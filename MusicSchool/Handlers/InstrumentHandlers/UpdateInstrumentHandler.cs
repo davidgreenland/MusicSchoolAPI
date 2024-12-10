@@ -17,21 +17,16 @@ public class UpdateInstrumentHandler : IRequestHandler<UpdateInstrumentCommand, 
 
     public async Task<Instrument> Handle(UpdateInstrumentCommand request, CancellationToken cancellationToken)
     {
-        var instrument = await _instrumentService.GetInstrumentByIdAsync(request.Id);
-
-        if (instrument == null)
-        {
-            throw new InstrumentNotFoundException(request.Id);
-        }
+        var instrument = await _instrumentService.GetInstrumentByIdAsync(request.Id) ?? throw new NotFoundException($"Instrument {request.Id} not found");
 
         if (!await _instrumentService.CategoryExistsAsync(request.NewCategoryId)) // foreign key
         {
-            throw new CategoryNotFoundException(request.Id);
+            throw new NotFoundException($"Category {request.NewCategoryId} not found");
         }
 
         if (instrument.Name != request.NewName && await _instrumentService.InstrumentExistsAsync(request.NewName))
         {
-            throw new EntityNameConflictException(request.NewName);
+            throw new NameConflictException(request.NewName);
         }
         
         instrument.Name = request.NewName;
