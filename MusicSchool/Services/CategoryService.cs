@@ -1,11 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MusicSchool.Models;
-using MusicSchool.Requests.Category;
-using MusicSchool.Responses;
 using MusicSchool.Services.Interfaces;
-using System.Diagnostics.Metrics;
-using System.Net;
 
 namespace MusicSchool.Services;
 
@@ -18,82 +13,46 @@ public class CategoryService : ICategoryService
         _context = context;
     }
 
-    public async Task<ApiResponse<IEnumerable<CategoryResponse>>> GetAllCategoriesAsync()
+    public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
     {
-        var categories = await _context.Category
+        return await _context.Category
             .OrderBy(c => c.Name)
-            .Select(c => new CategoryResponse(c.Id, c.Name))
             .ToListAsync();
-
-        return new ApiResponse<IEnumerable<CategoryResponse>>(HttpStatusCode.OK, categories);
     }
 
-    public async Task<ApiResponse<CategoryResponse>> GetCategoryAsync(int id)
+    public async Task<Category?> GetCategoryByIdAsync(int id)
     {
-        var category = await _context.Category
+        return await _context.Category
                 .Include(c => c.Instruments)
                 .SingleOrDefaultAsync(x => x.Id == id);
-
-        return category == null
-            ? new ApiResponse<CategoryResponse>(HttpStatusCode.NotFound, message: null)
-            : new ApiResponse<CategoryResponse>(HttpStatusCode.OK, new CategoryResponse(category.Id, category.Name, category.Instruments!));
     }
 
-    public async Task<ApiResponse<Category>> UpdateCategoryAsync(int id, [FromBody] UpdateCategory request)
+    public async Task DeleteAsync(Category category)
     {
-        var category = await _context.Category
-            .SingleOrDefaultAsync(x => x.Id == id);
+        _context.Remove(category);
+        await CommitAsync();
+    }
 
-        if (category == null) 
-        {
-            return new ApiResponse<Category>(HttpStatusCode.NotFound, "Id not found");
-        }
+    public async Task InsertAsync(Category category)
+    {
+        _context.Add(category);
+        await CommitAsync();
+    }
 
-        category.Name = request.NewCategoryName;
+    public async Task CommitAsync()
+    {
         await _context.SaveChangesAsync();
-
-        return new ApiResponse<Category>(HttpStatusCode.OK, category);
     }
 
-    public async Task<ApiResponse<Category>> CreateCategoryAsync([FromBody] CreateCategoryRequest request)
+    public async Task<bool> CheckCategoryExistsAsync(string name)
     {
-        var existingCategory = await _context.Category
-            .SingleOrDefaultAsync(c => c.Name == request.CategoryName);
-
-        if (existingCategory != null)
-        {
-            return new ApiResponse<Category>(HttpStatusCode.Conflict, "Category already exists");
-        }
-
-        var newCategory = new Category { Name = request.CategoryName };
-        _context.Category.Add(newCategory);
-        await _context.SaveChangesAsync();
-
-        return new ApiResponse<Category>(HttpStatusCode.Created, newCategory);
+        return await _context.Category
+            .AnyAsync(c => c.Name == name);
     }
 
-    public async Task<ApiResponse<Category>> DeleteCategoryAsync(int id)
+    public async Task<bool> CategoryHasInstrument(int id)
     {
-        var category = await _context.Category
-            .SingleOrDefaultAsync(x => x.Id == id);
-
-        if (category == null)
-        {
-            return new ApiResponse<Category>(HttpStatusCode.NotFound, $"Instrument {id} not found");
-        }
-
-        var categoryHasInstrument = await _context.Instrument
+        return await _context.Instrument
             .AnyAsync(x => x.CategoryId == id);
-
-        if (categoryHasInstrument)
-        {
-
-            return new ApiResponse<Category>(HttpStatusCode.Conflict, "Unable to delete category");
-        }
-
-        _context.Category.Remove(category);
-        await _context.SaveChangesAsync();
-
-        return new ApiResponse<Category>(HttpStatusCode.NoContent, data: null);
     }
 }

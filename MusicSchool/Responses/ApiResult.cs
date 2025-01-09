@@ -3,7 +3,7 @@ using System.Net;
 
 namespace MusicSchool.Responses;
 
-public class ApiResponse<T> : StatusCodeResult where T : class
+public class ApiResult<T> : StatusCodeResult where T : class
 {
     public string? Message { get; init; }
     public T? Data { get; init; }
@@ -15,12 +15,12 @@ public class ApiResponse<T> : StatusCodeResult where T : class
         }
     }
 
-    public ApiResponse(HttpStatusCode statusCode, string? message) : base((int) statusCode)
+    public ApiResult(HttpStatusCode statusCode, string? message) : base((int)statusCode)
     {
         Message = message;
     }
 
-    public ApiResponse(HttpStatusCode statusCode, T? data) : base((int)statusCode)
+    public ApiResult(HttpStatusCode statusCode, T? data) : base((int)statusCode)
     {
         Data = data;
     }

@@ -1,8 +1,8 @@
-﻿using MusicSchool.Responses;
+﻿using MusicSchool.Models;
 
 namespace MusicSchool.Services.Interfaces;
 
 public interface ISearchService
 {
-    Task<ApiResponse<IEnumerable<SearchResponse>>> GetSearchResultsAsync(string q);
+    Task<IEnumerable<Student>> GetSearchResultsAsync(string q);
 }
